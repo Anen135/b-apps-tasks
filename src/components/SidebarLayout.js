@@ -27,7 +27,7 @@ export default function SidebarLayout({ children }) {
             justifyContent: 'space-between',
             alignItems: 'center',
             backgroundColor: '#1c1c1c',
-            padding: '15px 20px',
+            padding: '15px',
             borderBottom: '1px solid #333',
           }}
         >
@@ -48,7 +48,9 @@ export default function SidebarLayout({ children }) {
 
         <ul style={{ listStyle: 'none', padding: '20px', margin: 0 }}>
           <li style={{ marginBottom: '10px' }}><Link href="/">Главная</Link></li>
-          <li style={{ marginBottom: '10px' }}><Link href="/about">О нас</Link></li>
+          <li style={{ marginBottom: '10px' }}><Link href="/tasks">Задачи</Link></li>
+          <li style={{ marginBottom: '10px' }}><Link href="/editor">Редактор</Link></li>
+          <li style={{ marginBottom: '10px' }}><Link href="/login">Вход</Link></li>
         </ul>
       </div>
 
@@ -57,8 +59,6 @@ export default function SidebarLayout({ children }) {
         style={{
           flexGrow: 1,
           transition: 'margin-left 0.3s ease',
-          marginLeft: isOpen ? `${sidebarWidth}px` : '0px',
-          padding: '20px',
         }}
       >
         {/* Кнопка открытия, если меню закрыто */}
