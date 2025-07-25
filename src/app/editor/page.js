@@ -1,4 +1,4 @@
-import CanvasEditor from '@/components/CanvasEditor';
+import CanvasEditor from '@/components/editor/CanvasEditor';
 
 export default function Home() {
   return (
