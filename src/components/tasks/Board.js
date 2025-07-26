@@ -107,6 +107,7 @@ const Board = () => {
             columnId={columnId}
             title={columnTitles[columnId]}
             tasks={tasks}
+            activeId={activeTask?.id}
           />
         ))}
       </div>

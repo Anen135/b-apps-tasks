@@ -2,13 +2,14 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-const Task = ({ id, content }) => {
+const Task = ({ id, content, activeId }) => {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
-    transition
+    transition,
+    isDragging
   } = useSortable({ id })
 
   const style = {
@@ -19,7 +20,8 @@ const Task = ({ id, content }) => {
     marginBottom: '10px',
     borderRadius: '5px',
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    cursor: 'grab'
+    cursor: 'grab',
+    opacity: id === activeId ? 0 : 1,
   }
 
   return (

@@ -3,7 +3,7 @@ import Task from './Task'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 
-const Column = ({ title, columnId, tasks }) => {
+const Column = ({ title, columnId, tasks, activeId}) => {
   const { setNodeRef, isOver } = useDroppable({ id: columnId })
 
   return (
@@ -35,7 +35,7 @@ const Column = ({ title, columnId, tasks }) => {
           </div>
         ) : (
           tasks.map(task => (
-            <Task key={task.id} id={task.id} content={task.content} />
+            <Task key={task.id} id={task.id} content={task.content} activeId={activeId} />
           ))
         )}
       </SortableContext>
