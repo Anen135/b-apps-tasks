@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   // ⚠️ ПРИ КОММИТЕ: верни provider = "postgresql"
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 

@@ -1,105 +1,139 @@
-'use client'
 // sourcery skip: use-braces
-import { useState } from 'react'
-import { DndContext, closestCenter } from '@dnd-kit/core'
+'use client'
+import { useState, useEffect, useCallback } from 'react'
+import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
 import Column from './Column'
-import { DragOverlay } from '@dnd-kit/core'
 
-const initialTasks = {
-  todo: [{ id: '1', content: 'Task 1' }, { id: '2', content: 'Task 2' }],
-  inProgress: [{ id: '3', content: 'Task 3' }],
-  done: [{ id: '4', content: 'Task 4' }]
-}
-
-const columnTitles = {
-  todo: 'TODO',
-  inProgress: 'In Progress',
-  done: 'Done'
-}
-
-const Board = () => {
-  const [columns, setColumns] = useState(initialTasks)
+const Board = ({ onStatusChange }) => {
+  const [columns, setColumns] = useState({})
+  const [columnTitles, setColumnTitles] = useState({})
   const [activeTask, setActiveTask] = useState(null)
+  const [status, setStatus] = useState('loading')
 
+  const updateStatus = useCallback((newStatus) => {
+    setStatus(newStatus)
+    onStatusChange?.(newStatus)
+  }, [onStatusChange])
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        updateStatus('loading')
+        const res = await fetch('/api/columns')
+        const data = await res.json()
+
+        const mapped = {}
+        const titles = {}
+
+        data.forEach(column => {
+          titles[column.id] = column.title
+          mapped[column.id] = column.tasks.map(task => ({
+            id: task.id,
+            content: task.content
+          }))
+        })
+
+        setColumns(mapped)
+        setColumnTitles(titles)
+        updateStatus('idle')
+      } catch (err) {
+        console.error('Failed to fetch columns:', err)
+        updateStatus('error')
+      }
+    }
+
+    fetchData()
+  }, [updateStatus])
+
+  const updateTask = async (task) => {
+    try {
+      await fetch(`/api/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: task.content,
+          columnId: task.columnId,
+          position: task.position
+        })
+      })
+    } catch (err) {
+      console.error('Error updating task:', task, err)
+      updateStatus('error')
+    }
+  }
+
+  const findColumnByTaskId = (taskId) =>
+    Object.keys(columns).find(key =>
+      columns[key].some(task => task.id === taskId)
+    )
+
+  const handleDragEnd = async ({ active, over }) => {
     if (!over) return
 
     const activeId = active.id
     const overId = over.id
 
-    // Если перетаскиваем в пустую колонку
-    if (Object.keys(columns).includes(overId)) {
-      const fromColumnId = findColumnByTaskId(activeId)
-      const toColumnId = overId
-      if (!fromColumnId || fromColumnId === toColumnId) return
-
-      const fromTasks = [...columns[fromColumnId]].filter(t => t.id !== activeId)
-      const movedTask = columns[fromColumnId].find(t => t.id === activeId)
-      const toTasks = [...columns[toColumnId], movedTask]
-
-      setColumns({
-        ...columns,
-        [fromColumnId]: fromTasks,
-        [toColumnId]: toTasks
-      })
-      return
-    }
-
-    // Перетаскивание между задачами
     const fromColumnId = findColumnByTaskId(activeId)
-    const toColumnId = findColumnByTaskId(overId)
+    const toColumnId = findColumnByTaskId(overId) || overId
+    const movedTask = columns[fromColumnId]?.find(t => t.id === activeId)
 
-    if (!fromColumnId || !toColumnId) return
+    if (!fromColumnId || !toColumnId || !movedTask) return
+    if (fromColumnId === toColumnId && activeId === overId) return
 
-    if (fromColumnId === toColumnId) {
-      const tasks = [...columns[fromColumnId]]
-      const oldIndex = tasks.findIndex(t => t.id === activeId)
-      const newIndex = tasks.findIndex(t => t.id === overId)
+    let updatedColumns = { ...columns }
 
-      const reordered = [...tasks]
-      const [moved] = reordered.splice(oldIndex, 1)
-      reordered.splice(newIndex, 0, moved)
+    // Remove from source
+    updatedColumns[fromColumnId] = updatedColumns[fromColumnId].filter(t => t.id !== activeId)
 
-      setColumns({
-        ...columns,
-        [fromColumnId]: reordered
-      })
+    // Insert into destination
+    const insertIndex = updatedColumns[toColumnId]?.findIndex(t => t.id === overId) ?? -1
+    if (insertIndex >= 0) {
+      updatedColumns[toColumnId].splice(insertIndex + 1, 0, movedTask)
     } else {
-      const fromTasks = [...columns[fromColumnId]].filter(t => t.id !== activeId)
-      const movedTask = columns[fromColumnId].find(t => t.id === activeId)
-      const toTasks = [...columns[toColumnId]]
-      const overIndex = toTasks.findIndex(t => t.id === overId)
-      toTasks.splice(overIndex + 1, 0, movedTask)
-
-      setColumns({
-        ...columns,
-        [fromColumnId]: fromTasks,
-        [toColumnId]: toTasks
-      })
+      updatedColumns[toColumnId] = [...updatedColumns[toColumnId], movedTask]
     }
-  }
 
-  const findColumnByTaskId = (taskId) => {
-    return Object.keys(columns).find(key =>
-      columns[key].some(task => task.id === taskId)
-    )
+    setColumns(updatedColumns)
+
+    // Update DB
+    updateStatus('saving')
+
+    try {
+      // Обновляем все задачи в обеих колонках с позициями
+      const updatePromises = [fromColumnId, toColumnId].map(colId =>
+        updatedColumns[colId].map((task, idx) =>
+          updateTask({
+            id: task.id,
+            content: task.content,
+            columnId: colId,
+            position: idx
+          })
+        )
+      ).flat()
+
+      await Promise.all(updatePromises)
+
+      updateStatus('saved')
+      setTimeout(() => updateStatus('idle'), 1000)
+    } catch {
+      updateStatus('error')
+    }
   }
 
   return (
     <DndContext
       collisionDetection={closestCenter}
-      onDragStart={(event) => {
-        const taskId = event.active.id
-        const fromColumnId = findColumnByTaskId(taskId)
-        const task = columns[fromColumnId]?.find(t => t.id === taskId)
-        if (task) { setActiveTask(task) }
+      onDragStart={({ active }) => {
+        const fromColumnId = findColumnByTaskId(active.id)
+        const task = columns[fromColumnId]?.find(t => t.id === active.id)
+        if (task) setActiveTask(task)
       }}
-      onDragEnd={(event) => { handleDragEnd(event); setActiveTask(null); }}
+      onDragEnd={(event) => {
+        handleDragEnd(event)
+        setActiveTask(null)
+      }}
       onDragCancel={() => setActiveTask(null)}
     >
-
       <div style={{ display: 'flex', gap: '20px', padding: '20px' }}>
         {Object.entries(columns).map(([columnId, tasks]) => (
           <Column
@@ -111,21 +145,19 @@ const Board = () => {
           />
         ))}
       </div>
+
       <DragOverlay>
-        {activeTask ? (
-          <div
-            style={{
-              padding: '10px',
-              backgroundColor: '#fff',
-              borderRadius: '5px',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.15)'
-            }}
-          >
+        {activeTask && (
+          <div style={{
+            padding: '10px',
+            backgroundColor: '#fff',
+            borderRadius: '5px',
+            boxShadow: '0 2px 5px rgba(0,0,0,0.15)'
+          }}>
             {activeTask.content}
           </div>
-        ) : null}
+        )}
       </DragOverlay>
-
     </DndContext>
   )
 }

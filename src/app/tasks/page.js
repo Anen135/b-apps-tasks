@@ -1,8 +1,13 @@
+// sourcery skip: use-braces
 'use client'
 import Head from 'next/head'
+import { useState } from 'react'
 import Board from "@/components/tasks/Board"
+import StatusIndicator from "@/components/tasks/StatusIndicator"
 
 export default function TasksPage() {
+  const [status, setStatus] = useState('idle')
+
   return (
     <>
       <Head>
@@ -17,20 +22,20 @@ export default function TasksPage() {
           fontFamily: 'system-ui, sans-serif',
         }}
       >
-        <div style={{
-          margin: '0 auto',
-        }}>
+        <div style={{ margin: '0 auto' }}>
           <h1 style={{
             fontSize: '2.2rem',
             fontWeight: 700,
-            marginBottom: '30px',
+            marginBottom: '10px',
             textAlign: 'center',
             color: '#333',
           }}>
             My Tasks Board
           </h1>
 
-          <Board />
+          <StatusIndicator status={status} />
+
+          <Board onStatusChange={setStatus} />
         </div>
       </main>
     </>
