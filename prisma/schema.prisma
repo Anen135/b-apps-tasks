@@ -4,6 +4,7 @@ generator client {
 }
 
 datasource db {
+  // ⚠️ ПРИ КОММИТЕ: верни provider = "postgresql"
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
