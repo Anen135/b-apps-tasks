@@ -50,6 +50,7 @@ export default function SidebarLayout({ children }) {
           <li style={{ marginBottom: '10px' }}><Link href="/">Главная</Link></li>
           <li style={{ marginBottom: '10px' }}><Link href="/tasks">Задачи</Link></li>
           <li style={{ marginBottom: '10px' }}><Link href="/editor">Редактор</Link></li>
+          <li style={{ marginBottom: '10px' }}><Link href="/test/api">Тест API</Link></li>
           <li style={{ marginBottom: '10px' }}><Link href="/login">Вход</Link></li>
         </ul>
       </div>

@@ -4,6 +4,23 @@ generator client {
 }
 
 datasource db {
+  // ⚠️ ПРИ КОММИТЕ: верни provider = "postgresql"
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Column {
+  id     String  @id @default(cuid())
+  title  String
+  tasks  Task[]  @relation("ColumnTasks")
+}
+
+model Task {
+  id        String   @id @default(cuid())
+  content   String
+  position  Int      // для сортировки внутри колонки
+  columnId  String
+  column    Column   @relation("ColumnTasks", fields: [columnId], references: [id])
+
+  @@index([columnId, position])
 }
