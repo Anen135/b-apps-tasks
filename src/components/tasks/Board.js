@@ -1,8 +1,10 @@
 // sourcery skip: use-braces
+// app/components/Board.js
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
 import Column from './Column'
+import { useBoardHandlers } from '@/hooks/useBoardHandlers'
 
 const Board = ({ onStatusChange }) => {
   const [columns, setColumns] = useState({})
@@ -14,6 +16,19 @@ const Board = ({ onStatusChange }) => {
     setStatus(newStatus)
     onStatusChange?.(newStatus)
   }, [onStatusChange])
+
+  const findColumnByTaskId = useCallback((taskId) => {
+    return Object.keys(columns).find(key =>
+      columns[key].some(task => task.id === taskId)
+    )
+  }, [columns])
+
+  const {
+    handleTaskUpdate,
+    handleTaskDelete,
+    handleTaskCreate,
+    handleDragEnd,
+  } = useBoardHandlers({ columns, setColumns, updateStatus, findColumnByTaskId })
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,81 +60,6 @@ const Board = ({ onStatusChange }) => {
     fetchData()
   }, [updateStatus])
 
-  const updateTask = async (task) => {
-    try {
-      await fetch(`/api/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: task.content,
-          columnId: task.columnId,
-          position: task.position
-        })
-      })
-    } catch (err) {
-      console.error('Error updating task:', task, err)
-      updateStatus('error')
-    }
-  }
-
-  const findColumnByTaskId = (taskId) =>
-    Object.keys(columns).find(key =>
-      columns[key].some(task => task.id === taskId)
-    )
-
-  const handleDragEnd = async ({ active, over }) => {
-    if (!over) return
-
-    const activeId = active.id
-    const overId = over.id
-
-    const fromColumnId = findColumnByTaskId(activeId)
-    const toColumnId = findColumnByTaskId(overId) || overId
-    const movedTask = columns[fromColumnId]?.find(t => t.id === activeId)
-
-    if (!fromColumnId || !toColumnId || !movedTask) return
-    if (fromColumnId === toColumnId && activeId === overId) return
-
-    let updatedColumns = { ...columns }
-
-    // Remove from source
-    updatedColumns[fromColumnId] = updatedColumns[fromColumnId].filter(t => t.id !== activeId)
-
-    // Insert into destination
-    const insertIndex = updatedColumns[toColumnId]?.findIndex(t => t.id === overId) ?? -1
-    if (insertIndex >= 0) {
-      updatedColumns[toColumnId].splice(insertIndex + 1, 0, movedTask)
-    } else {
-      updatedColumns[toColumnId] = [...updatedColumns[toColumnId], movedTask]
-    }
-
-    setColumns(updatedColumns)
-
-    // Update DB
-    updateStatus('saving')
-
-    try {
-      // Обновляем все задачи в обеих колонках с позициями
-      const updatePromises = [fromColumnId, toColumnId].map(colId =>
-        updatedColumns[colId].map((task, idx) =>
-          updateTask({
-            id: task.id,
-            content: task.content,
-            columnId: colId,
-            position: idx
-          })
-        )
-      ).flat()
-
-      await Promise.all(updatePromises)
-
-      updateStatus('saved')
-      setTimeout(() => updateStatus('idle'), 1000)
-    } catch {
-      updateStatus('error')
-    }
-  }
-
   return (
     <DndContext
       collisionDetection={closestCenter}
@@ -142,6 +82,9 @@ const Board = ({ onStatusChange }) => {
             title={columnTitles[columnId]}
             tasks={tasks}
             activeId={activeTask?.id}
+            onTaskUpdate={handleTaskUpdate}
+            onTaskDelete={handleTaskDelete}
+            onTaskCreate={handleTaskCreate}
           />
         ))}
       </div>
