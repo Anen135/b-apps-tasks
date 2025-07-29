@@ -1,3 +1,4 @@
+// sourcery skip: use-braces
 'use client'
 
 import { forwardRef, useState, useImperativeHandle } from 'react'

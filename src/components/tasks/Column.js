@@ -1,3 +1,4 @@
+// sourcery skip: use-braces
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
