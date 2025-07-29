@@ -138,7 +138,8 @@ const styles = {
     backgroundColor: '#fff',
     boxShadow: '2px 0 12px rgba(0,0,0,0.05)',
     zIndex: 1,
-    width: 500,
+    width: '100%',
+    maxWidth: 500,
   },
   title: {
     fontSize: '32px',
