@@ -3,16 +3,18 @@
 'use client'
 import { useCallback } from 'react'
 
-export const useBoardHandlers = ({ columns, setColumns, updateStatus, findColumnByTaskId }) => {
+export const useBoardHandlers = ({ columns, setColumns, updateStatus }) => {
+
+    const getColumnByTaskId = useCallback((taskId) => {
+        return Object.keys(columns).find(key =>
+            columns[key].some(task => task.id === taskId)
+        )
+    }, [columns])
+
+
     const handleTaskUpdate = async (columnId, taskId, newContent) => {
         updateStatus('saving')
         try {
-            await fetch(`/api/tasks/${taskId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: newContent })
-            })
-
             setColumns(prev => {
                 const updated = { ...prev }
                 updated[columnId] = updated[columnId].map(task =>
@@ -20,7 +22,11 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus, findColumn
                 )
                 return updated
             })
-
+            await fetch(`/api/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: newContent })
+            })
             updateStatus('saved')
             setTimeout(() => updateStatus('idle'), 1000)
         } catch (err) {
@@ -83,19 +89,25 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus, findColumn
         const activeId = active.id
         const overId = over.id
 
-        const fromColumnId = findColumnByTaskId(activeId)
-        const toColumnId = findColumnByTaskId(overId) || overId
+        const fromColumnId = getColumnByTaskId(activeId)
+        const toColumnId = getColumnByTaskId(overId) || overId
         const movedTask = columns[fromColumnId]?.find(t => t.id === activeId)
 
         if (!fromColumnId || !toColumnId || !movedTask) return
-        if (fromColumnId === toColumnId && activeId === overId) return
+        if (fromColumnId === toColumnId) {
+            const fromTasks = columns[fromColumnId]
+            const oldIndex = fromTasks.findIndex(t => t.id === activeId)
+            const newIndex = fromTasks.findIndex(t => t.id === overId)
 
-        let updatedColumns = { ...columns }
+            if (newIndex < 0 || oldIndex === newIndex || oldIndex === newIndex + 1) {
+                return
+            }
+        }
 
-        // Remove from source
+        const updatedColumns = { ...columns }
+
         updatedColumns[fromColumnId] = updatedColumns[fromColumnId].filter(t => t.id !== activeId)
 
-        // Insert into destination
         const insertIndex = updatedColumns[toColumnId]?.findIndex(t => t.id === overId) ?? -1
         if (insertIndex >= 0) {
             updatedColumns[toColumnId].splice(insertIndex + 1, 0, movedTask)
@@ -107,16 +119,12 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus, findColumn
         updateStatus('saving')
 
         try {
-            const updatePromises = [fromColumnId, toColumnId].map(colId =>
-                updatedColumns[colId].map((task, idx) =>
-                    updateTask({
-                        id: task.id,
-                        content: task.content,
-                        columnId: colId,
-                        position: idx
-                    })
-                )
-            ).flat()
+            const updatePromises = Array.from(new Set([fromColumnId, toColumnId])) // <== ключ!
+                .map(colId =>
+                    updatedColumns[colId].map((task, idx) =>
+                        updateTask({ ...task, columnId: colId, position: idx })
+                    )
+                ).flat()
 
             await Promise.all(updatePromises)
 
@@ -126,6 +134,7 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus, findColumn
             updateStatus('error')
         }
     }
+
 
     const updateTask = async (task) => {
         try {
@@ -150,5 +159,6 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus, findColumn
         handleTaskDelete,
         handleTaskCreate,
         handleDragEnd,
+        getColumnByTaskId,
     }
 }

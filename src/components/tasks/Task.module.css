@@ -1,0 +1,3 @@
+.task-no-scale * {
+  transform: none !important;
+}

@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import SidebarLayout from '@/components/SidebarLayout';
+import { Toaster } from "sonner";
 import "./globals.css";
 // comments
 const geistSans = Geist({
@@ -25,6 +26,17 @@ export default function RootLayout({ children }) {
       >
         <SidebarLayout>
         {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            toastOptions={{
+              className: "bg-background text-foreground",
+              style: {
+                fontFamily: "var(--font-geist-sans)",
+              },
+            }}
+          />
         </SidebarLayout>
       </body>
     </html>
