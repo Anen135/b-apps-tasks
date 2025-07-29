@@ -1,7 +1,7 @@
 // sourcery skip: use-braces
 'use client'
 
-import { forwardRef, useState, useImperativeHandle } from 'react'
+import { forwardRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2, Copy } from 'lucide-react'
