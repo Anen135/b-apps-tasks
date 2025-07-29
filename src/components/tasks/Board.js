@@ -1,34 +1,44 @@
 // sourcery skip: use-braces
-// app/components/Board.js
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+
+import { useEffect, useState, useCallback } from 'react'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
 import Column from './Column'
 import { useBoardHandlers } from '@/hooks/useBoardHandlers'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+
 
 const Board = ({ onStatusChange }) => {
   const [columns, setColumns] = useState({})
   const [columnTitles, setColumnTitles] = useState({})
   const [activeTask, setActiveTask] = useState(null)
   const [status, setStatus] = useState('loading')
+  const [layoutDirection, setLayoutDirection] = useState('horizontal') // or 'vertical'
 
   const updateStatus = useCallback((newStatus) => {
     setStatus(newStatus)
     onStatusChange?.(newStatus)
   }, [onStatusChange])
 
-  const findColumnByTaskId = useCallback((taskId) => {
-    return Object.keys(columns).find(key =>
-      columns[key].some(task => task.id === taskId)
-    )
-  }, [columns])
-
   const {
     handleTaskUpdate,
     handleTaskDelete,
     handleTaskCreate,
     handleDragEnd,
-  } = useBoardHandlers({ columns, setColumns, updateStatus, findColumnByTaskId })
+    getColumnByTaskId,
+  } = useBoardHandlers({ columns, setColumns, updateStatus })
+
+  // Адаптация к ориентации экрана
+  useEffect(() => {
+    const updateLayout = () => {
+      const horizontal = window.innerWidth >= window.innerHeight
+      setLayoutDirection(horizontal ? 'horizontal' : 'vertical')
+    }
+
+    updateLayout()
+    window.addEventListener('resize', updateLayout)
+    return () => window.removeEventListener('resize', updateLayout)
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,7 +74,7 @@ const Board = ({ onStatusChange }) => {
     <DndContext
       collisionDetection={closestCenter}
       onDragStart={({ active }) => {
-        const fromColumnId = findColumnByTaskId(active.id)
+        const fromColumnId = getColumnByTaskId(active.id)
         const task = columns[fromColumnId]?.find(t => t.id === active.id)
         if (task) setActiveTask(task)
       }}
@@ -74,29 +84,42 @@ const Board = ({ onStatusChange }) => {
       }}
       onDragCancel={() => setActiveTask(null)}
     >
-      <div style={{ display: 'flex', gap: '20px', padding: '20px' }}>
-        {Object.entries(columns).map(([columnId, tasks]) => (
-          <Column
-            key={columnId}
-            columnId={columnId}
-            title={columnTitles[columnId]}
-            tasks={tasks}
-            activeId={activeTask?.id}
-            onTaskUpdate={handleTaskUpdate}
-            onTaskDelete={handleTaskDelete}
-            onTaskCreate={handleTaskCreate}
-          />
-        ))}
-      </div>
+      <SortableContext
+  items={Object.values(columns).flatMap(tasks => tasks.map(t => t.id))}
+  strategy={verticalListSortingStrategy} // можно использовать другую стратегию
+>
+  <div
+    className="p-4 grid gap-6"
+    style={{
+      display: 'grid',
+      gridTemplateColumns:
+        layoutDirection === 'horizontal'
+          ? 'repeat(auto-fit, minmax(280px, 1fr))'
+          : '1fr',
+      gridAutoFlow: layoutDirection === 'horizontal' ? 'row' : 'column',
+    }}
+  >
+    {Object.entries(columns).map(([columnId, tasks]) => (
+      <Column
+        key={columnId}
+        columnId={columnId}
+        title={columnTitles[columnId]}
+        tasks={tasks}
+        activeId={activeTask?.id}
+        onTaskUpdate={handleTaskUpdate}
+        onTaskDelete={handleTaskDelete}
+        onTaskCreate={handleTaskCreate}
+        direction={layoutDirection}
+      />
+    ))}
+  </div>
+</SortableContext>
+
+
 
       <DragOverlay>
         {activeTask && (
-          <div style={{
-            padding: '10px',
-            backgroundColor: '#fff',
-            borderRadius: '5px',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.15)'
-          }}>
+          <div className="p-4 bg-white rounded-xl shadow-lg text-sm max-w-[280px] break-words">
             {activeTask.content}
           </div>
         )}

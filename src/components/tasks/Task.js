@@ -1,12 +1,18 @@
 // sourcery skip: use-braces
 'use client'
-import { useState, useRef } from 'react'
+
+import { forwardRef, useState, useImperativeHandle } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Pencil, Trash2, Copy } from 'lucide-react'
+import clsx from 'clsx'
+import { toast } from 'sonner'
 
-const Task = ({ id, content, activeId, onUpdate, onDelete}) => {
+// Оборачиваем в forwardRef
+const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, externalRef) => {
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(content)
+  const [isHovering, setIsHovering] = useState(false)
   const [isHoveringButtons, setIsHoveringButtons] = useState(false)
 
   const {
@@ -18,50 +24,60 @@ const Task = ({ id, content, activeId, onUpdate, onDelete}) => {
     isDragging
   } = useSortable({ id })
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    padding: '10px',
-    backgroundColor: '#fff',
-    marginBottom: '10px',
-    borderRadius: '5px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    cursor: isEditing ? 'text' : 'grab',
-    opacity: id === activeId ? 0 : 1,
-    position: 'relative'
-  }
-
-  const saveEdit = async () => {
-    setIsEditing(false)
-    if (value !== content) {
-      try {
-        await fetch(`/api/tasks/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: value })
-        })
-        onUpdate?.(value) // <<< обновить родителя
-      } catch (err) {
-        console.error('Failed to update content', err)
-      }
-    }
-  }
-
-  const deleteTask = async () => {
-    try {
-      await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
-      onDelete?.() // <<< удалить из колонки в родителе
-    } catch (err) {
-      console.error('Failed to delete task', err)
+  // Прокидываем ref наверх
+  const combinedRef = (node) => {
+    setNodeRef(node)
+    if (typeof externalRef === 'function') {
+      externalRef(node)
+    } else if (externalRef) {
+      externalRef.current = node
     }
   }
 
   const shouldEnableDrag = !isEditing && !isHoveringButtons
 
+  const saveEdit = () => {
+    setIsEditing(false)
+    if (value !== content) {
+      onUpdate?.(value)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') saveEdit()
+    if (e.key === 'Escape') {
+      setValue(content)
+      setIsEditing(false)
+    }
+  }
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      toast.success('Скопировано в буфер обмена')
+    } catch (err) {
+      toast.error('Ошибка при копировании')
+      console.error('Ошибка копирования:', err)
+    }
+  }
+
   return (
     <div
-      ref={setNodeRef}
-      style={style}
+      ref={combinedRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: id === activeId ? 0 : 1,
+      }}
+      className={clsx(
+        'relative bg-white rounded-xl p-4 shadow-sm text-sm break-words',
+        'transition-opacity duration-200',
+        'hover:shadow-md',
+        'select-none',
+        isDragging && 'opacity-50'
+      )}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       {...attributes}
       {...(shouldEnableDrag ? listeners : {})}
     >
@@ -70,51 +86,38 @@ const Task = ({ id, content, activeId, onUpdate, onDelete}) => {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={saveEdit}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') saveEdit()
-            if (e.key === 'Escape') {
-              setValue(content)
-              setIsEditing(false)
-            }
-          }}
+          onKeyDown={handleKeyDown}
           autoFocus
-          style={{
-            width: '100%',
-            border: 'none',
-            outline: 'none',
-            background: 'transparent',
-            fontSize: '1rem'
-          }}
+          className="w-full bg-transparent outline-none border-none text-sm select-text"
         />
       ) : (
         <>
-          {content}
+          <div className="whitespace-pre-wrap break-words pr-12">{content}</div>
+
+          {/* Buttons */}
           <div
-            style={{
-              position: 'absolute',
-              right: '8px',
-              top: '8px',
-              display: 'flex',
-              gap: '6px'
-            }}
+            className={clsx(
+              'absolute right-2 top-2 flex gap-2 items-center transition-opacity',
+              isHovering ? 'opacity-100' : 'opacity-0'
+            )}
             onMouseEnter={() => setIsHoveringButtons(true)}
             onMouseLeave={() => setIsHoveringButtons(false)}
           >
-            <button onClick={() => setIsEditing(true)} style={btnStyle} title="Редактировать">✏️</button>
-            <button onClick={deleteTask} style={btnStyle} title="Удалить">🗑</button>
+            <button onClick={handleCopy} title="Копировать">
+              <Copy className="w-4 h-4 text-muted-foreground hover:text-primary" />
+            </button>
+            <button onClick={() => setIsEditing(true)} title="Редактировать">
+              <Pencil className="w-4 h-4 text-muted-foreground hover:text-primary" />
+            </button>
+            <button onClick={onDelete} title="Удалить">
+              <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+            </button>
           </div>
         </>
       )}
     </div>
   )
-}
+})
 
-const btnStyle = {
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '2px',
-  fontSize: '0.9rem'
-}
-
+Task.displayName = 'Task'
 export default Task
