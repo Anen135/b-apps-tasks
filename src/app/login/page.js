@@ -68,13 +68,13 @@ export default function LoginPage() {
                 },
               },
               color: {
-                value: '#ffffff',
+                value: '#aaccff', // светло-синий/фиолетовый
               },
               shape: {
                 type: 'circle',
               },
               opacity: {
-                value: { min: 0.2, max: 0.8 },
+                value: { min: 0.2, max: 0.6 },
                 animation: {
                   enable: true,
                   speed: 0.5,
@@ -83,7 +83,7 @@ export default function LoginPage() {
                 },
               },
               size: {
-                value: { min: 1, max: 5 }, // разные размеры создают эффект глубины
+                value: { min: 1, max: 5 },
                 animation: {
                   enable: true,
                   speed: 2,
@@ -93,14 +93,19 @@ export default function LoginPage() {
               },
               links: {
                 enable: true,
-                distance: 120,
-                color: '#ffffff',
-                opacity: 0.2,
+                distance: 160, // увеличение расстояния между линиями
+                color: '#aaccff',
+                opacity: 0.25,
                 width: 1,
+                triangles: {
+                  enable: true,              // 🔺 Включить "плёнку" между 3 точками
+                  color: '#aaccff',
+                  opacity: 0.05,
+                },
               },
               move: {
                 enable: true,
-                speed: { min: 0.2, max: 1.5 }, // разная скорость создаёт 3D-ощущение
+                speed: { min: 0.2, max: 1.2 },
                 direction: 'none',
                 outModes: {
                   default: 'bounce',
@@ -109,6 +114,7 @@ export default function LoginPage() {
             },
             detectRetina: true,
           }}
+
           style={styles.particles}
         />
       </div>
@@ -120,11 +126,11 @@ const styles = {
   wrapper: {
     display: 'flex',
     height: '100vh',
-    width: '100vw',
+    // width: '100vw',
     overflow: 'hidden',
   },
   left: {
-    flex: 1,
+    // flex: 1,
     padding: '2rem',
     display: 'flex',
     flexDirection: 'column',
@@ -132,6 +138,8 @@ const styles = {
     backgroundColor: '#fff',
     boxShadow: '2px 0 12px rgba(0,0,0,0.05)',
     zIndex: 1,
+    width: '100%',
+    maxWidth: 500,
   },
   title: {
     fontSize: '32px',
@@ -161,16 +169,17 @@ const styles = {
     cursor: 'pointer',
   },
   right: {
-    flex: 2,
+    flex: 1,
     position: 'relative',
     overflow: 'hidden',
+    backgroundColor: '#0f0c29', // fallback
   },
   gradientOverlay: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    background: 'linear-gradient(to bottom, #0f2027, #203a43, #2c5364)', // подводный градиент
-    filter: 'blur(2px)', // легкий блюр фона
+    background: 'linear-gradient(to bottom, #250042ff, #000000ff)', // светлый верх, глубокий низ
+    filter: 'blur(2px)',
     zIndex: 0,
   },
   particles: {
@@ -182,4 +191,5 @@ const styles = {
     height: '100%',
     backdropFilter: 'blur(1px)',
   },
+
 };
