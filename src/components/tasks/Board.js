@@ -4,14 +4,15 @@ import { useEffect, useState, useCallback } from 'react'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
 import Column from './Column'
 import { useBoardHandlers } from '@/hooks/useBoardHandlers'
-import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 const Board = ({ onStatusChange }) => {
   const [columns, setColumns] = useState({})
   const [columnTitles, setColumnTitles] = useState({})
   const [activeTask, setActiveTask] = useState(null)
+  const [activeTaskSize, setActiveTaskSize] = useState(null)
   const [status, setStatus] = useState('loading')
-  const [layoutDirection, setLayoutDirection] = useState('horizontal') // адаптация к ориентации
+  const [layoutDirection, setLayoutDirection] = useState('horizontal')
 
   const updateStatus = useCallback((newStatus) => {
     setStatus(newStatus)
@@ -28,8 +29,7 @@ const Board = ({ onStatusChange }) => {
 
   useEffect(() => {
     const updateLayout = () => {
-      const horizontal = window.innerWidth >= window.innerHeight
-      setLayoutDirection(horizontal ? 'horizontal' : 'vertical')
+      setLayoutDirection(window.innerWidth >= window.innerHeight ? 'horizontal' : 'vertical')
     }
 
     updateLayout()
@@ -49,10 +49,7 @@ const Board = ({ onStatusChange }) => {
 
         data.forEach(column => {
           titles[column.id] = column.title
-          mapped[column.id] = column.tasks.map(task => ({
-            id: task.id,
-            content: task.content
-          }))
+          mapped[column.id] = column.tasks.map(task => ({ id: task.id, content: task.content }))
         })
 
         setColumns(mapped)
@@ -67,32 +64,68 @@ const Board = ({ onStatusChange }) => {
     fetchData()
   }, [updateStatus])
 
+  const handleDragOver = ({ active, over }) => {
+    const activeId = active?.id
+    const overId = over?.id
+    if (!activeId || !overId) return
+
+    const fromColumnId = getColumnByTaskId(activeId)
+    const toColumnId = overId.startsWith('column-') ? overId.replace('column-', '') : getColumnByTaskId(overId)
+
+    if (!fromColumnId || !toColumnId || fromColumnId === toColumnId) return
+
+    setColumns(prev => {
+      const task = prev[fromColumnId].find(t => t.id === activeId)
+      if (!task) return prev
+
+      return {
+        ...prev,
+        [fromColumnId]: prev[fromColumnId].filter(t => t.id !== activeId),
+        [toColumnId]: [...prev[toColumnId], task]
+      }
+    })
+  }
+
+  const handleDragStart = ({ active }) => {
+    const fromColumnId = getColumnByTaskId(active.id)
+    const task = columns[fromColumnId]?.find(t => t.id === active.id)
+    if (task) {
+      setActiveTask(task)
+
+      const node = document.querySelector(`[data-task-id="${active.id}"]`)
+      if (node) {
+        const { width, height } = node.getBoundingClientRect()
+        setActiveTaskSize({ width, height })
+      }
+    }
+  }
+
+  const resetActiveTask = () => {
+    setActiveTask(null)
+    setActiveTaskSize(null)
+  }
+
   return (
     <DndContext
       collisionDetection={closestCenter}
-      onDragStart={({ active }) => {
-        const fromColumnId = getColumnByTaskId(active.id)
-        const task = columns[fromColumnId]?.find(t => t.id === active.id)
-        if (task) setActiveTask(task)
-      }}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={(event) => {
         handleDragEnd(event)
-        setActiveTask(null)
+        resetActiveTask()
       }}
-      onDragCancel={() => setActiveTask(null)}
+      onDragCancel={resetActiveTask}
     >
-      <SortableContext
-        items={Object.values(columns).flatMap(tasks => tasks.map(t => t.id))}
-        strategy={rectSortingStrategy}
-      >
+<SortableContext
+  items={Object.keys(columns)} // список колонок
+  strategy={verticalListSortingStrategy} // или вертикальный, если нужно
+>
+
         <div
           className="p-4 grid gap-6 items-start"
           style={{
             display: 'grid',
-            gridTemplateColumns:
-              layoutDirection === 'horizontal'
-                ? 'repeat(auto-fit, minmax(280px, 1fr))'
-                : '1fr',
+            gridTemplateColumns: layoutDirection === 'horizontal' ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr',
             gridAutoFlow: layoutDirection === 'horizontal' ? 'row' : 'column',
             alignItems: 'stretch',
           }}
@@ -115,7 +148,13 @@ const Board = ({ onStatusChange }) => {
 
       <DragOverlay>
         {activeTask && (
-          <div className="p-4 bg-white rounded-xl shadow-lg text-sm max-w-[280px] break-words">
+          <div
+            className="p-4 bg-white rounded-xl shadow-lg text-sm break-words"
+            style={{
+              width: activeTaskSize?.width,
+              height: activeTaskSize?.height,
+            }}
+          >
             {activeTask.content}
           </div>
         )}
