@@ -1,3 +1,4 @@
+// sourcery skip: use-braces
 'use client'
 
 import { forwardRef, useState } from 'react'
@@ -7,6 +8,7 @@ import { Pencil, Trash2, Copy } from 'lucide-react'
 import clsx from 'clsx'
 import { toast } from 'sonner'
 
+// Оборачиваем в forwardRef
 const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, externalRef) => {
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(content)
@@ -19,9 +21,10 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, external
     setNodeRef,
     transform,
     transition,
-    isDragging,
+    isDragging
   } = useSortable({ id })
 
+  // Прокидываем ref наверх
   const combinedRef = (node) => {
     setNodeRef(node)
     if (typeof externalRef === 'function') {
@@ -35,7 +38,9 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, external
 
   const saveEdit = () => {
     setIsEditing(false)
-    if (value !== content) onUpdate?.(value)
+    if (value !== content) {
+      onUpdate?.(value)
+    }
   }
 
   const handleKeyDown = (e) => {
@@ -68,7 +73,8 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, external
       className={clsx(
         'relative bg-white rounded-xl p-4 shadow-sm text-sm break-words',
         'transition-opacity duration-200',
-        'hover:shadow-md select-none',
+        'hover:shadow-md',
+        'select-none',
         isDragging && 'opacity-50'
       )}
       onMouseEnter={() => setIsHovering(true)}
@@ -88,6 +94,8 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, external
       ) : (
         <>
           <div className="whitespace-pre-wrap break-words pr-12">{content}</div>
+
+          {/* Buttons */}
           <div
             className={clsx(
               'absolute right-2 top-2 flex gap-2 items-center transition-opacity',
