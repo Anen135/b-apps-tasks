@@ -81,14 +81,17 @@ const Column = ({
             ))}
 
             {isOver && activeTask && !isActiveTaskInColumn && (
-              <Task
-                key={activeTask.id}
-                id={activeTask.id}
-                content={activeTask.content}
-                activeId={activeId}
-                isSkeleton={activeTask.isSkeleton}
-              />
+             !tasks.some(t => t.id === activeTask.id) && (
+                <Task
+                  key={`temp-${activeTask.id}`}
+                  id={activeTask.id}
+                  content={activeTask.content}
+                  activeId={activeId}
+                  isSkeleton={activeTask.isSkeleton}
+                />
+              )
             )}
+
           </>
         )}
       </div>
