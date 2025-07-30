@@ -1,19 +1,17 @@
-// sourcery skip: use-braces
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core'
 import Column from './Column'
 import { useBoardHandlers } from '@/hooks/useBoardHandlers'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 
 const Board = ({ onStatusChange }) => {
   const [columns, setColumns] = useState({})
   const [columnTitles, setColumnTitles] = useState({})
   const [activeTask, setActiveTask] = useState(null)
   const [status, setStatus] = useState('loading')
-  const [layoutDirection, setLayoutDirection] = useState('horizontal') // or 'vertical'
+  const [layoutDirection, setLayoutDirection] = useState('horizontal') // адаптация к ориентации
 
   const updateStatus = useCallback((newStatus) => {
     setStatus(newStatus)
@@ -28,7 +26,6 @@ const Board = ({ onStatusChange }) => {
     getColumnByTaskId,
   } = useBoardHandlers({ columns, setColumns, updateStatus })
 
-  // Адаптация к ориентации экрана
   useEffect(() => {
     const updateLayout = () => {
       const horizontal = window.innerWidth >= window.innerHeight
@@ -85,37 +82,36 @@ const Board = ({ onStatusChange }) => {
       onDragCancel={() => setActiveTask(null)}
     >
       <SortableContext
-  items={Object.values(columns).flatMap(tasks => tasks.map(t => t.id))}
-  strategy={verticalListSortingStrategy} // можно использовать другую стратегию
->
-  <div
-    className="p-4 grid gap-6"
-    style={{
-      display: 'grid',
-      gridTemplateColumns:
-        layoutDirection === 'horizontal'
-          ? 'repeat(auto-fit, minmax(280px, 1fr))'
-          : '1fr',
-      gridAutoFlow: layoutDirection === 'horizontal' ? 'row' : 'column',
-    }}
-  >
-    {Object.entries(columns).map(([columnId, tasks]) => (
-      <Column
-        key={columnId}
-        columnId={columnId}
-        title={columnTitles[columnId]}
-        tasks={tasks}
-        activeId={activeTask?.id}
-        onTaskUpdate={handleTaskUpdate}
-        onTaskDelete={handleTaskDelete}
-        onTaskCreate={handleTaskCreate}
-        direction={layoutDirection}
-      />
-    ))}
-  </div>
-</SortableContext>
-
-
+        items={Object.values(columns).flatMap(tasks => tasks.map(t => t.id))}
+        strategy={rectSortingStrategy}
+      >
+        <div
+          className="p-4 grid gap-6 items-start"
+          style={{
+            display: 'grid',
+            gridTemplateColumns:
+              layoutDirection === 'horizontal'
+                ? 'repeat(auto-fit, minmax(280px, 1fr))'
+                : '1fr',
+            gridAutoFlow: layoutDirection === 'horizontal' ? 'row' : 'column',
+            alignItems: 'stretch',
+          }}
+        >
+          {Object.entries(columns).map(([columnId, tasks]) => (
+            <Column
+              key={columnId}
+              columnId={columnId}
+              title={columnTitles[columnId]}
+              tasks={tasks}
+              activeId={activeTask?.id}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              onTaskCreate={handleTaskCreate}
+              direction={layoutDirection}
+            />
+          ))}
+        </div>
+      </SortableContext>
 
       <DragOverlay>
         {activeTask && (

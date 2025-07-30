@@ -38,14 +38,12 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus }) => {
     const handleTaskDelete = async (columnId, taskId) => {
         updateStatus('saving')
         try {
-            await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
-
             setColumns(prev => {
                 const updated = { ...prev }
                 updated[columnId] = updated[columnId].filter(task => task.id !== taskId)
                 return updated
             })
-
+            await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
             updateStatus('saved')
             setTimeout(() => updateStatus('idle'), 1000)
         } catch (err) {
@@ -55,8 +53,24 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus }) => {
     }
 
     const handleTaskCreate = async (columnId) => {
-        updateStatus('saving')
+        updateStatus('saving');
+
+        const tempId = `temp-${Date.now()}`;
+        const skeletonTask = {
+            id: tempId,
+            content: 'Новая запись',
+            isSkeleton: true
+        };
+
+        // 1. Добавляем skeleton в колонку
+        setColumns(prev => {
+            const updated = { ...prev };
+            updated[columnId] = [skeletonTask, ...(updated[columnId] || [])];
+            return updated;
+        });
+
         try {
+            // 2. Отправляем запрос
             const res = await fetch('/api/tasks', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -65,23 +79,35 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus }) => {
                     position: 0,
                     columnId
                 })
-            })
+            });
 
-            const newTask = await res.json()
+            const newTask = await res.json();
 
+            // 3. Заменяем skeleton на настоящую задачу
             setColumns(prev => {
-                const updated = { ...prev }
-                updated[columnId] = [newTask, ...(updated[columnId] || [])]
-                return updated
-            })
+                const updated = { ...prev };
+                updated[columnId] = updated[columnId].map(task =>
+                    task.id === tempId ? newTask : task
+                );
+                return updated;
+            });
 
-            updateStatus('saved')
-            setTimeout(() => updateStatus('idle'), 1000)
+            updateStatus('saved');
+            setTimeout(() => updateStatus('idle'), 1000);
         } catch (err) {
-            console.error('Failed to create task:', err)
-            updateStatus('error')
+            console.error('Failed to create task:', err);
+
+            // 4. Удаляем skeleton при ошибке
+            setColumns(prev => {
+                const updated = { ...prev };
+                updated[columnId] = updated[columnId].filter(task => task.id !== tempId);
+                return updated;
+            });
+
+            updateStatus('error');
         }
-    }
+    };
+
 
     const handleDragEnd = async ({ active, over }) => {
         if (!over) return

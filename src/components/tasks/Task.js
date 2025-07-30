@@ -4,12 +4,12 @@
 import { forwardRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Pencil, Trash2, Copy } from 'lucide-react'
+import { Pencil, Trash2, Copy, AlertTriangle } from 'lucide-react'
 import clsx from 'clsx'
 import { toast } from 'sonner'
 
 // Оборачиваем в forwardRef
-const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, externalRef) => {
+const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton=false}, externalRef) => {
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(content)
   const [isHovering, setIsHovering] = useState(false)
@@ -81,6 +81,16 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, external
       {...attributes}
       {...(shouldEnableDrag ? listeners : {})}
     >
+      {/* Индикатор isSkeleton */}
+      {isSkeleton ? (
+        <div className="absolute top-1 left-1 text-yellow-500 text-xs" title="Черновик задачи">
+          <AlertTriangle className="w-4 h-4" />
+        </div>
+      ) : (
+        <div className="absolute top-1 left-1 text-green-500 text-xs" title="Задача">
+          ✔️
+        </div>
+      )}
       {isEditing ? (
         <input
           value={value}
