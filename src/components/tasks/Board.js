@@ -130,19 +130,20 @@ const Board = ({ onStatusChange }) => {
             alignItems: 'stretch',
           }}
         >
-          {Object.entries(columns).map(([columnId, tasks]) => (
-            <Column
-              key={columnId}
-              columnId={columnId}
-              title={columnTitles[columnId]}
-              tasks={tasks}
-              activeId={activeTask?.id}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              onTaskCreate={handleTaskCreate}
-              direction={layoutDirection}
-            />
-          ))}
+           {Object.entries(columns).map(([columnId, tasks]) => (
+      <Column
+        key={columnId}
+        columnId={columnId}
+        title={columnTitles[columnId]}
+        tasks={tasks}
+        activeId={activeTask?.id}
+        activeTask={activeTask}
+        onTaskUpdate={handleTaskUpdate}
+        onTaskDelete={handleTaskDelete}
+        onTaskCreate={handleTaskCreate}
+        direction={layoutDirection}
+      />
+    ))}
         </div>
       </SortableContext>
 
