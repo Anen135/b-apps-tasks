@@ -11,13 +11,6 @@ html, body {
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Стили для скруглений по краям */
-  --xs-border-radius: 0.25rem;
-  --s-border-radius: 0.5rem; 
-  --default-border-radius: 1rem; 
-  --l-border-radius: 1.5; 
-  --xl-border-radius: 2rem; 
-
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
