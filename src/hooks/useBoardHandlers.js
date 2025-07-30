@@ -59,7 +59,6 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus }) => {
         const skeletonTask = {
             id: tempId,
             content: 'Новая запись',
-            isSkeleton: true
         };
 
         // 1. Добавляем skeleton в колонку
@@ -110,56 +109,63 @@ export const useBoardHandlers = ({ columns, setColumns, updateStatus }) => {
 
 
     const handleDragEnd = async ({ active, over }) => {
-        if (!over) return
+  if (!over) return
 
-        const activeId = active.id
-        const overId = over.id
+  const activeId = active.id
+  const overId = over.id
 
-        const fromColumnId = getColumnByTaskId(activeId)
-        const toColumnId = getColumnByTaskId(overId) || overId
-        const movedTask = columns[fromColumnId]?.find(t => t.id === activeId)
+  const fromColumnId = getColumnByTaskId(activeId)
+  const toColumnId = getColumnByTaskId(overId) || overId
+  const movedTask = columns[fromColumnId]?.find(t => t.id === activeId)
 
-        if (!fromColumnId || !toColumnId || !movedTask) return
-        if (fromColumnId === toColumnId) {
-            const fromTasks = columns[fromColumnId]
-            const oldIndex = fromTasks.findIndex(t => t.id === activeId)
-            const newIndex = fromTasks.findIndex(t => t.id === overId)
+  if (!fromColumnId || !toColumnId || !movedTask) return
 
-            if (newIndex < 0 || oldIndex === newIndex || oldIndex === newIndex + 1) {
-                return
-            }
-        }
+  const updatedColumns = { ...columns }
 
-        const updatedColumns = { ...columns }
+  // Удаляем из старой позиции
+  updatedColumns[fromColumnId] = updatedColumns[fromColumnId].filter(t => t.id !== activeId)
 
-        updatedColumns[fromColumnId] = updatedColumns[fromColumnId].filter(t => t.id !== activeId)
+  // Вставка
+  const targetTasks = updatedColumns[toColumnId] || []
+  const overIndex = targetTasks.findIndex(t => t.id === overId)
 
-        const insertIndex = updatedColumns[toColumnId]?.findIndex(t => t.id === overId) ?? -1
-        if (insertIndex >= 0) {
-            updatedColumns[toColumnId].splice(insertIndex + 1, 0, movedTask)
-        } else {
-            updatedColumns[toColumnId] = [...updatedColumns[toColumnId], movedTask]
-        }
+  if (overIndex >= 0) {
+    // Определяем направление перемещения
+    const isSameColumn = fromColumnId === toColumnId
+    const fromIndex = columns[fromColumnId].findIndex(t => t.id === activeId)
+    const insertBefore = !isSameColumn || fromIndex > overIndex
 
-        setColumns(updatedColumns)
-        updateStatus('saving')
+    const insertAt = insertBefore ? overIndex : overIndex + 1
+    updatedColumns[toColumnId] = [
+      ...targetTasks.slice(0, insertAt),
+      movedTask,
+      ...targetTasks.slice(insertAt),
+    ]
+  } else {
+    // если перетаскиваем на пустую колонку
+    updatedColumns[toColumnId] = [...targetTasks, movedTask]
+  }
 
-        try {
-            const updatePromises = Array.from(new Set([fromColumnId, toColumnId])) // <== ключ!
-                .map(colId =>
-                    updatedColumns[colId].map((task, idx) =>
-                        updateTask({ ...task, columnId: colId, position: idx })
-                    )
-                ).flat()
+  setColumns(updatedColumns)
+  updateStatus('saving')
 
-            await Promise.all(updatePromises)
+  try {
+    const updatePromises = Array.from(new Set([fromColumnId, toColumnId]))
+      .map(colId =>
+        updatedColumns[colId].map((task, idx) =>
+          updateTask({ ...task, columnId: colId, position: idx })
+        )
+      )
+      .flat()
 
-            updateStatus('saved')
-            setTimeout(() => updateStatus('idle'), 1000)
-        } catch {
-            updateStatus('error')
-        }
-    }
+    await Promise.all(updatePromises)
+    updateStatus('saved')
+    setTimeout(() => updateStatus('idle'), 1000)
+  } catch {
+    updateStatus('error')
+  }
+}
+
 
 
     const updateTask = async (task) => {

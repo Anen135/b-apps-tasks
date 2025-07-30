@@ -1,15 +1,13 @@
-// sourcery skip: use-braces
 'use client'
 
 import { forwardRef, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Pencil, Trash2, Copy, AlertTriangle } from 'lucide-react'
+import { Pencil, Trash2, Copy } from 'lucide-react'
 import clsx from 'clsx'
 import { toast } from 'sonner'
 
-// Оборачиваем в forwardRef
-const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton=false}, externalRef) => {
+const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete }, externalRef) => {
   const [isEditing, setIsEditing] = useState(false)
   const [value, setValue] = useState(content)
   const [isHovering, setIsHovering] = useState(false)
@@ -21,10 +19,9 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
   } = useSortable({ id })
 
-  // Прокидываем ref наверх
   const combinedRef = (node) => {
     setNodeRef(node)
     if (typeof externalRef === 'function') {
@@ -38,9 +35,7 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton
 
   const saveEdit = () => {
     setIsEditing(false)
-    if (value !== content) {
-      onUpdate?.(value)
-    }
+    if (value !== content) onUpdate?.(value)
   }
 
   const handleKeyDown = (e) => {
@@ -63,6 +58,7 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton
 
   return (
     <div
+      data-task-id={id}
       ref={combinedRef}
       style={{
         transform: CSS.Transform.toString(transform),
@@ -72,8 +68,7 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton
       className={clsx(
         'relative bg-white rounded-xl p-4 shadow-sm text-sm break-words',
         'transition-opacity duration-200',
-        'hover:shadow-md',
-        'select-none',
+        'hover:shadow-md select-none',
         isDragging && 'opacity-50'
       )}
       onMouseEnter={() => setIsHovering(true)}
@@ -81,16 +76,6 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton
       {...attributes}
       {...(shouldEnableDrag ? listeners : {})}
     >
-      {/* Индикатор isSkeleton */}
-      {isSkeleton ? (
-        <div className="absolute top-1 left-1 text-yellow-500 text-xs" title="Черновик задачи">
-          <AlertTriangle className="w-4 h-4" />
-        </div>
-      ) : (
-        <div className="absolute top-1 left-1 text-green-500 text-xs" title="Задача">
-          ✔️
-        </div>
-      )}
       {isEditing ? (
         <input
           value={value}
@@ -103,8 +88,6 @@ const Task = forwardRef(({ id, content, activeId, onUpdate, onDelete, isSkeleton
       ) : (
         <>
           <div className="whitespace-pre-wrap break-words pr-12">{content}</div>
-
-          {/* Buttons */}
           <div
             className={clsx(
               'absolute right-2 top-2 flex gap-2 items-center transition-opacity',
