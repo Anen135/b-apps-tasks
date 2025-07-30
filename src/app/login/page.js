@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Particles from 'react-tsparticles';
 import { loadSlim } from 'tsparticles-slim';
+import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -40,9 +41,9 @@ export default function LoginPage() {
             style={styles.input}
             required
           />
-          <button type="submit" style={styles.button}>
-            Войти
-          </button>
+          <Button
+            style={styles.button}
+          >Войти</Button>
         </form>
       </div>
 
@@ -155,18 +156,15 @@ const styles = {
   input: {
     padding: '12px',
     marginBottom: '16px',
-    borderRadius: '6px',
+    // borderRadius: '6px',
     border: '1px solid #ccc',
     fontSize: '16px',
   },
   button: {
     padding: '12px',
-    backgroundColor: '#0070f3',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
     fontSize: '16px',
     cursor: 'pointer',
+    height: '50px',
   },
   right: {
     flex: 1,
