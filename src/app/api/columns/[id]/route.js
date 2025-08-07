@@ -1,3 +1,4 @@
+// src/app/api/columns/[id]/route.js
 import prisma from '@/lib/prisma'
 
 export async function GET(_, { params }) {
@@ -29,7 +30,10 @@ export async function PUT(req, { params }) {
 
   const updated = await prisma.column.update({
     where: { id },
-    data: { title: data.title }
+    data: {
+      title: data.title,
+      color: data.color
+    }
   })
   return Response.json(updated)
 }

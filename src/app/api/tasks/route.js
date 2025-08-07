@@ -1,3 +1,4 @@
+// src/app/api/tasks/[id]/route.js
 import prisma from '@/lib/prisma'
 
 export async function GET() {
@@ -11,7 +12,10 @@ export async function POST(req) {
     data: {
       content: data.content,
       position: data.position,
-      columnId: data.columnId
+      columnId: data.columnId,
+      color: data.color,
+      tags: data.tags ?? [],
+      userId: data.userId ?? null,
     }
   })
   return Response.json(task)
