@@ -70,7 +70,7 @@ export default function SidebarLayout({ children }) {
               position: 'absolute',
               top: 20,
               left: 20,
-              zIndex: 1000,
+              zIndex: 10000,
               fontSize: '24px',
               background: 'transparent',
               border: 'none',
