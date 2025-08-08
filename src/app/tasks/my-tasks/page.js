@@ -4,20 +4,48 @@ import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession()
-  const [tasks, setTasks] = useState(null)
+  const { data: session, status } = useSession({ required: true, })
 
-  useEffect(() => {
-    if (session) {
-      fetch("/api/my-tasks")
-        .then((res) => res.json())
-        .then((data) => setTasks(data))
-    }
-  }, [session])
+  const [tasks, setTasks] = useState(null)
+  const [loadingTasks, setLoadingTasks] = useState(true)
+
+const [hasFetchedTasks, setHasFetchedTasks] = useState(false)
+
+useEffect(() => {
+  if (status === "authenticated" && !hasFetchedTasks) {
+    setLoadingTasks(true)
+    fetch("/api/tasks/my-tasks", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setTasks(data)
+          setHasFetchedTasks(true) // не загружать повторно
+        } else {
+          console.error("Invalid data from API:", data)
+          setTasks([])
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+        setTasks([])
+      })
+      .finally(() => setLoadingTasks(false))
+  }
+}, [status, hasFetchedTasks])
+
+
+
+
+
+
 
   if (status === "loading") return <p>Загрузка...</p>
   if (!session) return <p>Вы не вошли в систему</p>
-  if (!tasks) return <p>Загрузка задач...</p>
+  if (loadingTasks && tasks === null) return <p>Загрузка задач...</p>
+
 
   return (
     <div>

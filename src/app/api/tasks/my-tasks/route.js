@@ -1,13 +1,12 @@
-// /app/api/my-tasks/route.js
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/authOptions"
 import prisma from "@/lib/prisma"
 
 export async function GET(req) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.login) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    return new Response(JSON.stringify({ error: "Unauthorized", userSession: session }), {
       status: 401,
     })
   }
@@ -28,6 +27,8 @@ export async function GET(req) {
     include: { column: true },
   })
 
-  return new Response(JSON.stringify(tasks), { status: 200 })
+  return new Response(JSON.stringify(tasks), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  })
 }
-ы
