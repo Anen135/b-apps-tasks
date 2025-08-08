@@ -1,33 +1,42 @@
-"use client"
+'use client'
+
 import { useSession } from "next-auth/react"
 import useSWR from "swr"
 
-const fetcher = (url) => fetch(url).then(res => res.json())
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error("Ошибка при загрузке задач")
+  return res.json()
+}
 
 export default function MyTasks() {
   const { data: session, status } = useSession()
+  const {
+    data: tasks,
+    error,
+    isLoading,
+  } = useSWR(session ? "/api/my-tasks" : null, fetcher)
 
-  // ✅ useSWR всегда вызывается, но с null, если нет session
-  const { data: tasks, error } = useSWR(
-    session ? "/api/my-tasks" : null,
-    fetcher
-  )
+  if (status === "loading") return <p>Загрузка сессии...</p>
+  if (status === "unauthenticated") return <p>Пожалуйста, войдите</p>
 
-  if (status === "loading") return <p>Загрузка...</p>
+  if (isLoading) return <p>Загрузка задач...</p>
+  if (error) return <p>Произошла ошибка: {error.message}</p>
 
-  if (!session) return <p>Пожалуйста, войдите</p>
-
-  if (error) return <p>Ошибка при загрузке</p>
-  if (!tasks) return <p>Загрузка задач...</p>
+  if (!tasks || tasks.length === 0) {
+    return <p>У вас пока нет задач</p>
+  }
 
   return (
     <div>
       <h2>Мои задачи ({tasks.length})</h2>
-      {tasks.map((task) => (
-        <div key={task.id}>
-          <b>{task.content}</b> (в колонке: {task.column.title})
-        </div>
-      ))}
+      <ul>
+        {tasks.map((task) => (
+          <li key={task.id}>
+            <strong>{task.content}</strong> (в колонке: {task.column.title})
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
