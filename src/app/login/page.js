@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Particles from 'react-tsparticles';
 import { loadSlim } from 'tsparticles-slim';
 import { Button } from '@/components/ui/button';
+import { signIn } from "next-auth/react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -24,6 +25,7 @@ export default function LoginPage() {
       {/* Левая часть: форма входа */}
       <div style={styles.left}>
         <h1 style={styles.title}>Вход</h1>
+          <Button style={styles.button} onClick={() => signIn()}>Войти</Button>
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             type="email"

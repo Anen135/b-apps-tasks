@@ -32,14 +32,15 @@ model Task {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  login     String   @unique
-  color     String   @default("#CCCCCC")
-  createdAt DateTime @default(now())
+  id        String    @id @default(cuid())
+  login     String    @unique
+  email     String?   @unique
+  color     String    @default("#CCCCCC")
+  createdAt DateTime  @default(now())
   tags      String[]
-  nickname  String   @default("Anonymous")
+  nickname  String    @default("Anonymous")
   password  String
-  avatarUrl String   @default("avatars/unset_avatar.jpg")
+  avatarUrl String    @default("avatars/unset_avatar.jpg")
 
   tasks Task[] @relation("UserTasks")
 }
