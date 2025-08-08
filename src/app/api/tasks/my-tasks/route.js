@@ -1,7 +1,7 @@
 // /pages/api/tasks/my-tasks.js
 // sourcery skip: use-braces
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]"
+import { authOptions } from "@/app/api/[...nextauth]/route";
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
