@@ -2,7 +2,7 @@ import CanvasEditor from '@/components/editor/CanvasEditor';
 
 export default function Home() {
   return (
-    <main className="w-screen h-screen overflow-hidden">
+    <main className="h-screen w-full overflow-hidden">
       <CanvasEditor />
     </main>
   );
