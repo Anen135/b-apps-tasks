@@ -1,4 +1,3 @@
-// sourcery skip: use-braces
 'use client'
 import Head from 'next/head'
 import { useState } from 'react'
