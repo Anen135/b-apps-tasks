@@ -1,7 +1,7 @@
 // app/api/my-tasks/route.ts
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth" // см. ниже
-import { prisma } from "@/lib/prisma"
+import prisma from "@/lib/prisma"
 
 export async function GET() {
   const session = await getServerSession(authOptions)
