@@ -1,6 +1,5 @@
-// /lib/authOptions.js
 import GitHub from "next-auth/providers/github"
-import prisma from "@/lib/prisma"
+import { findUserByLogin, createUser } from "@/lib/userService"
 
 export const authOptions = {
   providers: [
@@ -18,27 +17,20 @@ export const authOptions = {
       },
     }),
   ],
-    session: {
+  session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 дней в секундах
-    updateAge: 24 * 60 * 60,   // (необязательно) обновлять токен раз в 24 часа
-    },
-
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+  },
   callbacks: {
     async signIn({ user }) {
-      const existingUser = await prisma.user.findUnique({
-        where: { login: user.login },
-      })
+      const existingUser = await findUserByLogin(user.login)
 
       if (!existingUser) {
-        await prisma.user.create({
-          data: {
-            login: user.login,
-            nickname: user.name || "Anonymous",
-            avatarUrl: user.image || "avatars/unset_avatar.jpg",
-            password: "",
-            tags: [],
-          },
+        await createUser({
+          login: user.login,
+          name: user.name,
+          image: user.image,
         })
       }
 

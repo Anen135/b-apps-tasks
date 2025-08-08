@@ -1,51 +1,50 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession({ required: true, })
+  const { data: session, status } = useSession({ required: true })
 
   const [tasks, setTasks] = useState(null)
   const [loadingTasks, setLoadingTasks] = useState(true)
+  const [hasFetchedTasks, setHasFetchedTasks] = useState(false)
 
-const [hasFetchedTasks, setHasFetchedTasks] = useState(false)
-
-useEffect(() => {
-  if (status === "authenticated" && !hasFetchedTasks) {
+  const fetchTasks = useCallback(async () => {
     setLoadingTasks(true)
-    fetch("/api/tasks/my-tasks", {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setTasks(data)
-          setHasFetchedTasks(true) // не загружать повторно
-        } else {
-          console.error("Invalid data from API:", data)
-          setTasks([])
-        }
+    try {
+      const res = await fetch("/api/tasks/my-tasks", {
+        method: "GET",
+        credentials: "include",
       })
-      .catch((err) => {
-        console.error(err)
+
+      const data = await res.json()
+
+      if (Array.isArray(data)) {
+        setTasks(data)
+        setHasFetchedTasks(true)
+      } else {
+        console.error("Invalid data from API:", data)
         setTasks([])
-      })
-      .finally(() => setLoadingTasks(false))
-  }
-}, [status, hasFetchedTasks])
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке задач:", error)
+      setTasks([])
+    } finally {
+      setLoadingTasks(false)
+    }
+  }, [])
 
+  useEffect(() => {
+    if (status === "authenticated" && !hasFetchedTasks) {
+      fetchTasks()
+    }
+  }, [status, hasFetchedTasks, fetchTasks])
 
-
-
-
-
-
-  if (status === "loading") return <p>Загрузка...</p>
+  if (status === "loading") return <p>Загрузка сессии...</p>
   if (!session) return <p>Вы не вошли в систему</p>
-  if (loadingTasks && tasks === null) return <p>Загрузка задач...</p>
-
+  if (loadingTasks) return <p>Загрузка задач...</p>
+  if (!tasks?.length) return <p>Задачи не найдены</p>
 
   return (
     <div>
