@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import useSWR from "swr"
 
-const fetcher = async (url: string) => {
+const fetcher = async (url) => {
   const res = await fetch(url)
   if (!res.ok) throw new Error("Ошибка при загрузке задач")
   return res.json()
