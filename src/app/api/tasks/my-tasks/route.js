@@ -1,14 +1,13 @@
-// /pages/api/tasks/my-tasks.js
-// sourcery skip: use-braces
+// app/api/my-tasks/route.ts
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth" // см. ниже
+import { prisma } from "@/lib/prisma"
 
-export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions)
+export async function GET() {
+  const session = await getServerSession(authOptions)
 
   if (!session?.user?.login) {
-    return res.status(401).json({ error: "Unauthorized" })
+    return Response.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const user = await prisma.user.findUnique({
@@ -16,12 +15,14 @@ export default async function handler(req, res) {
     select: { id: true },
   })
 
-  if (!user) return res.status(404).json({ error: "User not found" })
+  if (!user) {
+    return Response.json({ error: "User not found" }, { status: 404 })
+  }
 
   const tasks = await prisma.task.findMany({
     where: { userId: user.id },
     include: { column: true },
   })
 
-  res.status(200).json(tasks)
+  return Response.json(tasks)
 }
