@@ -1,7 +1,7 @@
 // app/tasks/my-tasks/page.jsx
-import dynamic from 'next/dynamic'
+'use client'
 
-const MyTasks = dynamic(() => import('@/components/MyTasks'), { ssr: false })
+import MyTasks from '@/components/MyTasks'
 
 export default function Page() {
   return (
