@@ -25,7 +25,7 @@ export default function LoginPage() {
       {/* Левая часть: форма входа */}
       <div style={styles.left}>
         <h1 style={styles.title}>Вход</h1>
-          <Button style={styles.button} onClick={() => signIn()}>Войти</Button>
+          <Button style={styles.button} onClick={() => signIn('github')}>Войти</Button>
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             type="email"
