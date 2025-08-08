@@ -1,7 +1,8 @@
 // src/app/tasks/my-tasks/page.js
 // sourcery skip: use-braces
+'use client'
 import { useSession } from "next-auth/react"
-import { useSWR } from "swr"
+import useSWR from "swr"
 
 const fetcher = (url) => fetch(url).then(res => res.json())
 
