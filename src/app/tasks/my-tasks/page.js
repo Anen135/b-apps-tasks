@@ -1,6 +1,6 @@
+'use client'
 // src/app/tasks/my-tasks/page.js
 // sourcery skip: use-braces
-'use client'
 import { useSession } from "next-auth/react"
 import useSWR from "swr"
 
