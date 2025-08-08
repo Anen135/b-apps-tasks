@@ -1,13 +1,15 @@
-// app/api/my-tasks/route.ts
+// /app/api/my-tasks/route.js
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth" // см. ниже
 import prisma from "@/lib/prisma"
 
-export async function GET() {
+export async function GET(req) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user?.login) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+    })
   }
 
   const user = await prisma.user.findUnique({
@@ -16,7 +18,9 @@ export async function GET() {
   })
 
   if (!user) {
-    return Response.json({ error: "User not found" }, { status: 404 })
+    return new Response(JSON.stringify({ error: "User not found" }), {
+      status: 404,
+    })
   }
 
   const tasks = await prisma.task.findMany({
@@ -24,5 +28,6 @@ export async function GET() {
     include: { column: true },
   })
 
-  return Response.json(tasks)
+  return new Response(JSON.stringify(tasks), { status: 200 })
 }
+ы
