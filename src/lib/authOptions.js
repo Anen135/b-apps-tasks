@@ -1,5 +1,5 @@
 import GitHub from "next-auth/providers/github"
-import { findUserByLogin, createUser } from "@/lib/userService"
+import { findUserByLogin, createUser } from "@/lib/auth/userService"
 
 export const authOptions = {
   providers: [
