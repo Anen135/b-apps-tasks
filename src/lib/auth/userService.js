@@ -1,4 +1,3 @@
-// src/lib/auth/userService.js
 import prisma from "@/lib/prisma"
 
 /**
@@ -11,16 +10,26 @@ export async function findUserByLogin(login) {
 }
 
 /**
- * Создать нового пользователя
+ * Создать нового пользователя с защитой от гонок через транзакцию
  */
-export async function createUser({ login, name, image }) {
-  return await prisma.user.create({
-    data: {
-      login,
-      nickname: name || "Anonymous",
-      avatarUrl: image || "/avatars/unset_avatar.jpg",
-      password: "",
-      tags: [],
-    },
+export async function createUserSafe({ login, name, image }) {
+  return await prisma.$transaction(async (tx) => {
+    let existingUser = await tx.user.findUnique({
+      where: { login },
+    })
+
+    if (existingUser) {
+      return existingUser
+    }
+
+    return await tx.user.create({
+      data: {
+        login,
+        nickname: name || "Anonymous",
+        avatarUrl: image || "/avatars/unset_avatar.jpg",
+        password: "",
+        tags: [],
+      },
+    })
   })
 }

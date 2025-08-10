@@ -1,4 +1,3 @@
-// src/lib/authOptions.js
 import GitHub from "next-auth/providers/github"
 import { findUserByLogin, createUser } from "@/lib/auth/userService"
 
@@ -25,31 +24,35 @@ export const authOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      const existingUser = await findUserByLogin(user.login)
+      let existingUser = await findUserByLogin(user.login)
 
       if (!existingUser) {
-        await createUser({
+        existingUser = await createUser({
           login: user.login,
           name: user.name,
           image: user.image,
         })
       }
+      user.id = existingUser.id
+      user.tags = existingUser.tags || []
 
       return true
     },
+
     async jwt({ token, user }) {
+      // user есть только при первом входе
       if (user) {
-        const dbUser = await findUserByLogin(user.login)
-        token.id = dbUser.id
-        token.login = dbUser.login
-        token.tags = dbUser.tags
+        token.id = user.id
+        token.login = user.login
+        token.tags = user.tags || []
       }
       return token
     },
+
     async session({ session, token }) {
       session.user.id = token.id
       session.user.login = token.login
-      session.user.tags = token.tags
+      session.user.tags = token.tags || []
       return session
     },
   },
