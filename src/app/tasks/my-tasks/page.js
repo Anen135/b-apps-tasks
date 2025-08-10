@@ -12,29 +12,37 @@ export default function MyTasks() {
   const [hasFetchedTasks, setHasFetchedTasks] = useState(false)
 
   const fetchTasks = useCallback(async () => {
-    setLoadingTasks(true)
-    try {
-      const res = await fetch("/api/tasks/my-tasks", {
-        method: "GET",
-        credentials: "include",
-      })
+  setLoadingTasks(true)
+  try {
+    const res = await fetch("/api/tasks/my-tasks", {
+      method: "GET",
+      credentials: "include",
+    })
 
-      const data = await res.json()
-
-      if (Array.isArray(data)) {
-        setTasks(data)
-        setHasFetchedTasks(true)
-      } else {
-        console.error("Invalid data from API:", data)
-        setTasks([])
-      }
-    } catch (error) {
-      console.error("Ошибка при загрузке задач:", error)
+    if (!res.ok) {
+      const text = await res.text()
+      console.error("Ошибка ответа сервера:", res.status, text)
       setTasks([])
-    } finally {
-      setLoadingTasks(false)
+      return
     }
-  }, [])
+
+    const data = await res.json()
+
+    if (Array.isArray(data)) {
+      setTasks(data)
+      setHasFetchedTasks(true)
+    } else {
+      console.error("Некорректные данные от API:", data)
+      setTasks([])
+    }
+  } catch (error) {
+    console.error("Ошибка при загрузке задач:", error)
+    setTasks([])
+  } finally {
+    setLoadingTasks(false)
+  }
+}, [])
+
 
   useEffect(() => {
     if (status === "authenticated" && !hasFetchedTasks) {

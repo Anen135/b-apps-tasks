@@ -13,22 +13,9 @@ export default function TasksPage() {
         <title>Kanban Board</title>
       </Head>
 
-      <main
-        style={{
-          minHeight: '100vh',
-          backgroundColor: '#f9f9fb',
-          padding: '40px 20px',
-          fontFamily: 'system-ui, sans-serif',
-        }}
-      >
-        <div style={{ margin: '0 auto' }}>
-          <h1 style={{
-            fontSize: '2.2rem',
-            fontWeight: 700,
-            marginBottom: '10px',
-            textAlign: 'center',
-            color: '#333',
-          }}>
+      <main className="min-h-screen bg-[#f9f9fb] px-5 py-10 font-sans">
+        <div className="mx-auto">
+          <h1 className="text-[2.2rem] font-bold mb-2.5 text-center text-[#333]">
             My Tasks Board
           </h1>
 

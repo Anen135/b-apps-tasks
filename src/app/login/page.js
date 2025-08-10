@@ -1,3 +1,4 @@
+// src/app/login/page.js
 'use client';
 
 import ParticlesAnimation from '@/components/login/ParticlesAnimation';
@@ -5,37 +6,12 @@ import GitHubLoginButton from '@/components/login/GitHubLoginButton';
 
 export default function LoginPage() {
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.left}>
-        <h1 style={styles.title}>Вход</h1>
+    <div className="flex h-screen overflow-hidden">
+      <div className="flex flex-col justify-center p-8 bg-white shadow-[2px_0_12px_rgba(0,0,0,0.05)] z-[1] w-full max-w-[500px]">
+        <h1 className="text-2xl md:text-[32px] font-bold mb-8 text-black">Вход</h1>
         <GitHubLoginButton />
       </div>
       <ParticlesAnimation />
     </div>
   );
 }
-
-const styles = {
-  wrapper: {
-    display: 'flex',
-    height: '100vh',
-    overflow: 'hidden',
-  },
-  left: {
-    padding: '2rem',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    boxShadow: '2px 0 12px rgba(0,0,0,0.05)',
-    zIndex: 1,
-    width: '100%',
-    maxWidth: 500,
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: 'bold',
-    marginBottom: '2rem',
-    color: '#000',
-  },
-};
