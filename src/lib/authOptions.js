@@ -42,7 +42,7 @@ export const authOptions = {
     async jwt({ token, user }) {
       // user есть только при первом входе
       if (user) {
-        token.id = user.id
+        token.sub = user.id
         token.login = user.login
         token.tags = user.tags || []
       }
@@ -50,7 +50,7 @@ export const authOptions = {
     },
 
     async session({ session, token }) {
-      session.user.id = token.id
+      session.user.id = token.sub
       session.user.login = token.login
       session.user.tags = token.tags || []
       return session

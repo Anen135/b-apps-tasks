@@ -6,7 +6,7 @@ export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
   // Разрешаем доступ к страницам логина и авторизации
-  if (["/login", "/auth"].some((path) => pathname.startsWith(path))) {
+  if (["/login", "/api/auth"].some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 

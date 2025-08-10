@@ -2,86 +2,88 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { Loading } from '@/components/Loading';
+
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 export default function SidebarLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session, status } = useSession();
 
-  const sidebarWidth = 250;
+  if (status === 'loading') return <Loading />;
+  if (!session?.user) return <>{children}</>;
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div className="flex relative" style={{ backgroundColor: '#0f0c29' }}>
       {/* Sidebar */}
       <div
+        className={`
+          text-white overflow-hidden flex-shrink-0 transition-width duration-300 ease-in-out z-10
+          ${isOpen ? 'w-64' : 'w-0'}
+        `}
         style={{
-          width: isOpen ? `${sidebarWidth}px` : '0px',
-          overflow: 'hidden',
-          backgroundColor: '#111',
-          color: '#fff',
-          transition: 'width 0.3s ease',
-          flexShrink: 0,
+          transitionProperty: 'width',
+          background: 'linear-gradient(180deg, #250042 0%, #000000 100%)',
+          color: '#aaccff',
         }}
       >
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: '#1c1c1c',
-            padding: '15px',
-            borderBottom: '1px solid #333',
-          }}
+          className="flex justify-between items-center px-4 py-3 border-b"
+          style={{ borderColor: '#3a007a' }}
         >
-          <h2 style={{ margin: 0, fontSize: '18px' }}>Меню</h2>
+          <h2 className="text-lg m-0" style={{ color: '#aaccff' }}>
+            Меню
+          </h2>
           <button
             onClick={() => setIsOpen(false)}
-            style={{
-              background: 'transparent',
-              color: '#fff',
-              border: 'none',
-              fontSize: '20px',
-              cursor: 'pointer',
-            }}
+            className="text-xl bg-transparent border-none cursor-pointer"
+            aria-label="Закрыть меню"
+            style={{ color: '#aaccff' }}
           >
-            ✖
+            <FaTimes />
           </button>
         </div>
 
-        <ul style={{ listStyle: 'none', padding: '20px', margin: 0 }}>
-          <li style={{ marginBottom: '10px' }}><Link href="/"        >Главная</Link>   </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/tasks/my-tasks">Мои задачи</Link></li>
-          <li style={{ marginBottom: '10px' }}><Link href="/tasks"   >Задачи</Link>    </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/editor"  >Редактор</Link>  </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/test/api">Тест API</Link>  </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/login"   >Вход</Link>      </li>
+        <ul className="list-none p-5 m-0">
+          {[
+            { href: '/', label: 'Главная' },
+            { href: '/tasks/my-tasks', label: 'Мои задачи' },
+            { href: '/tasks', label: 'Задачи' },
+            { href: '/editor', label: 'Редактор' },
+            { href: '/admin', label: 'Настройки' },
+            { href: '/test', label: 'Тест' },
+            { href: '/login', label: 'Вход' },
+          ].map(({ href, label }) => (
+            <li key={href} className="mb-2">
+              <Link
+                href={href}
+                className="hover:underline"
+                style={{ color: '#aaccff' }}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
 
       {/* Контент + Кнопка открытия */}
+      <div className='sparkle'/>
       <div
-        style={{
-          flexGrow: 1,
-          transition: 'margin-left 0.3s ease',
-        }}
+        className="flex-grow transition-margin duration-300 ease-in-out relative bg-gradient-to-b from-[#250042] to-black"
+        style={{ backgroundColor: '#0f0c29', color: '#aaccff' }}
       >
-        {/* Кнопка открытия, если меню закрыто */}
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            style={{
-              position: 'absolute',
-              top: 20,
-              left: 20,
-              zIndex: 10000,
-              fontSize: '24px',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-            }}
+            className="absolute top-5 left-5 z-50 text-3xl bg-transparent border-none cursor-pointer"
+            aria-label="Открыть меню"
+            style={{ color: '#aaccff' }}
           >
-            ☰
+            <FaBars />
           </button>
         )}
-
         {children}
       </div>
     </div>

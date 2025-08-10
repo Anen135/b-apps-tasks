@@ -14,7 +14,7 @@ export default function MyTasks() {
   const fetchTasks = useCallback(async () => {
   setLoadingTasks(true)
   try {
-    const res = await fetch("/api/tasks/my-tasks", {
+    const res = await fetch("/api/users/me/tasks", {
       method: "GET",
       credentials: "include",
     })

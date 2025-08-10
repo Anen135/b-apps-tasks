@@ -4,6 +4,7 @@ import { useState } from "react";
 import TestTasksButton from "@/components/tests/api/TestTasksButton";
 import TestColumnsButton from "@/components/tests/api/TestColumnsButton";
 import TestUsersButton from "@/components/tests/api/TestUsersButton";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 
 export default function ApiTestPage() {
@@ -200,6 +201,7 @@ export default function ApiTestPage() {
 
     return (
         <main className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
+            <Breadcrumbs />
             <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8">
                 <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">🧪 API Тестирование</h1>
 

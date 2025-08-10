@@ -5,7 +5,12 @@ import prisma from "@/lib/prisma"
 export async function GET() {
   try {
     const user = await getCurrentUser()
-
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      })
+    }
     const tasks = await prisma.task.findMany({
       where: { userId: user.id },
       include: { column: true },

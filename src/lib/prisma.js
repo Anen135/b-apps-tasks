@@ -1,4 +1,3 @@
-// sourcery skip: use-braces
 import { PrismaClient } from '@/generated/prisma'
 
 const globalForPrisma = global

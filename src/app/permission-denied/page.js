@@ -1,8 +1,13 @@
 'use client'
 import { FaLock } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function PermissionDenied() {
+  const user = useSession();
+  console.log(user);
+
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 py-12">
       <div className="max-w-md w-full text-center animate-fadeIn">
