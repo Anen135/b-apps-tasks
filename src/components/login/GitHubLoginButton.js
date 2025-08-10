@@ -8,7 +8,11 @@ export default function GitHubLoginButton() {
 
   const handleClick = async () => {
     setLoading(true);
-    await signIn('github');
+    try {
+      await signIn('github');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

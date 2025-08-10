@@ -13,7 +13,13 @@ export async function downloadImage(url, filename) {
 }
 
 export async function deleteImage(filename) {
-  if (filename == "unset_avatar.png") return
-  const filepath = path.resolve('./public/avatars', filename)
-  await fs.promises.unlink(filepath)
+  if (filename === "unset_avatar.png") return;
+  const filepath = path.resolve('./public/avatars', filename);
+
+  try {
+    await fs.promises.unlink(filepath);
+  } catch (err) {
+    if (err.code === 'ENOENT') { console.warn(`Файл не найден: ${filepath}`); }
+    else { throw err; }
+  }
 }

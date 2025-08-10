@@ -13,7 +13,7 @@ export default function TasksPage() {
         <title>Kanban Board</title>
       </Head>
 
-      <main className="min-h-screen bg-[#f9f9fb] px-5 py-10 font-sans">
+      <main className="min-h-screen px-5 py-10 font-sans text-foreground">
         <div className="mx-auto">
           <h1 className="text-[2.2rem] font-bold mb-2.5 text-center text-[#333]">
             My Tasks Board

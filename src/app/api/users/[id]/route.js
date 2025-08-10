@@ -54,30 +54,35 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(_, { params }) {
-  const { id } = await params
-
-  // Найти пользователя с avatarUrl
+  const { id } = await params;
   const user = await prisma.user.findUnique({
     where: { id },
     select: { avatarUrl: true }
-  })
+  });
 
   if (!user) {
-    return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 })
+    return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
   }
 
   try {
     if (user.avatarUrl) {
-      // из avatarUrl типа "/avatars/filename.png" нужно вытащить filename.png
-      const filename = user.avatarUrl.split('/').pop()
-      await deleteImage(filename)
+      const filename = user.avatarUrl.split('/').pop();
+      await deleteImage(filename);
     }
 
-    // Удалить пользователя из базы
-    await prisma.user.delete({ where: { id } })
+    await prisma.user.delete({ where: { id } });
+    return Response.json({ success: true });
 
-    return Response.json({ success: true })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+    if (error.code === 'ENOENT') {
+      console.warn(`Failed to delete image ${filename}:`, error)
+      try {
+        await prisma.user.delete({ where: { id } });
+        return Response.json({ success: true });
+      } catch (dbError) {
+        return new Response(JSON.stringify({ error: dbError.message }), { status: 500 });
+      }
+    }
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }

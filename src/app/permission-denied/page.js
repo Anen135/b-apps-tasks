@@ -4,11 +4,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 export default function PermissionDenied() {
-  console.log(`${process.env.NODE_ENV} mode`);
-  console.log(`${process.env.NEXTAUTH_URL} url`);
-  console.log(`${process.env.NEXTAUTH_SECRET} secret`);
-  console.log(`${process.env.NEXTAUTH_CLIENT_ID} id`);
-  console.log(`${process.env.NEXTAUTH_CLIENT_SECRET} secret`);
   const user = useSession();
   console.log(user);
 

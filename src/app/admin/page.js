@@ -26,7 +26,7 @@ export default function Page() {
   ];
 
   return (
-    <main className="p-20 max-w-4xl mx-auto min-h-screen font-sans bg-background text-foreground">
+    <main className="p-20 max-w-4xl mx-auto min-h-screen font-sans text-foreground">
       <NavPanel links={links} />
     </main>
   );

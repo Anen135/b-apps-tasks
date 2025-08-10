@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function Breadcrumbs() {
   const pathname = usePathname(); // например: "/tests/api/extra"
-  
+
   if (!pathname) return null;
 
   // Убираем первый пустой элемент (так как split("/"...) даст ["", "tests", "api"])
@@ -21,13 +21,12 @@ export default function Breadcrumbs() {
 
         return (
           <span key={href}>
-            {!isLast ? (
+            {isLast ?
+              <span style={{ fontWeight: "bold" }}>{label}</span>
+              :
               <Link href={href} style={{ color: "blue", textDecoration: "underline" }}>
                 {label}
-              </Link>
-            ) : (
-              <span style={{ fontWeight: "bold" }}>{label}</span>
-            )}
+              </Link>}
             {index < pathSegments.length - 1 && " / "}
           </span>
         );
