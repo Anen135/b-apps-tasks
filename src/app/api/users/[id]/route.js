@@ -75,7 +75,7 @@ export async function DELETE(_, { params }) {
 
   } catch (error) {
     if (error.code === 'ENOENT') {
-      console.warn(`Failed to delete image ${filename}:`, error)
+      if (filename) console.warn(`Failed to delete image ${filename}:`, error)
       try {
         await prisma.user.delete({ where: { id } });
         return Response.json({ success: true });

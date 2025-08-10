@@ -19,34 +19,19 @@ export async function createUser({ login, name, image }) {
     return existingUser;
   }
   let avatarUrl = '/unset_avatar.png';
-  let filename;
-
-  try {
-    if (image) {
-      filename = `${login}.jpg`;
-      avatarUrl = await downloadImage(image, filename);
-    }
-
-    return await prisma.$transaction(async (tx) => {
-      return await tx.user.create({
-        data: {
-          login,
-          nickname: name || "Anonymous",
-          avatarUrl,
-          password: "",
-          tags: [],
-        },
-      });
-    });
-  } catch (error) {
-    // Удаляем файл, если он был скачан
-    if (filename) {
-      try {
-        await fs.promises.unlink(`путь_к_аватаркам/${filename}`);
-      } catch (unlinkError) {
-        console.error('Ошибка удаления файла после неудачной транзакции:', unlinkError);
-      }
-    }
-    throw error;
+  if (image) {
+    const filename = `${login}.jpg`;
+    avatarUrl = await downloadImage(image, filename);
   }
+  return await prisma.$transaction(async (tx) => {
+    return await tx.user.create({
+      data: {
+        login,
+        nickname: name || "Anonymous",
+        avatarUrl,
+        password: "",
+        tags: [],
+      },
+    });
+  });
 }
