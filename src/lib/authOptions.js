@@ -1,3 +1,4 @@
+// src/lib/authOptions.js
 import GitHub from "next-auth/providers/github"
 import { findUserByLogin, createUser } from "@/lib/auth/userService"
 
@@ -37,11 +38,18 @@ export const authOptions = {
       return true
     },
     async jwt({ token, user }) {
-      if (user) token.login = user.login
+      if (user) {
+        const dbUser = await findUserByLogin(user.login)
+        token.id = dbUser.id
+        token.login = dbUser.login
+        token.tags = dbUser.tags
+      }
       return token
     },
     async session({ session, token }) {
+      session.user.id = token.id
       session.user.login = token.login
+      session.user.tags = token.tags
       return session
     },
   },

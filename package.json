@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "start": "next start",
+    "contest": "node prisma/contest.js",
     "lint": "next lint",
     "generate": "prisma generate",
     "build": "prisma generate && prisma migrate deploy && next build"

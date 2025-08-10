@@ -10,8 +10,8 @@ export default function ParticlesAnimation() {
   }, []);
 
   return (
-    <div style={styles.right}>
-      <div style={styles.gradientOverlay}></div>
+    <div className="flex-1 relative overflow-hidden bg-[#0f0c29]">
+      <div className="absolute w-full h-full bg-gradient-to-b from-[#250042] to-black blur-[2px] z-0" />
       <Particles
         id="tsparticles"
         init={particlesInit}
@@ -71,34 +71,8 @@ export default function ParticlesAnimation() {
           },
           detectRetina: true,
         }}
-        style={styles.particles}
+        className="absolute top-0 left-0 w-full h-full z-10 backdrop-blur-[1px]"
       />
     </div>
   );
 }
-
-const styles = {
-  right: {
-    flex: 1,
-    position: 'relative',
-    overflow: 'hidden',
-    backgroundColor: '#0f0c29',
-  },
-  gradientOverlay: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(to bottom, #250042ff, #000000ff)',
-    filter: 'blur(2px)',
-    zIndex: 0,
-  },
-  particles: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 1,
-    width: '100%',
-    height: '100%',
-    backdropFilter: 'blur(1px)',
-  },
-};

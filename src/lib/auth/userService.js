@@ -1,3 +1,4 @@
+// src/lib/auth/userService.js
 import prisma from "@/lib/prisma"
 
 /**

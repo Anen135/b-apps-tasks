@@ -10,44 +10,24 @@ export default function LoginForm({
   onSubmit,
 }) {
   return (
-    <form onSubmit={onSubmit} style={styles.form}>
+    <form onSubmit={onSubmit} className="flex flex-col justify-center">
       <input
         type="email"
         placeholder="Email"
         value={email}
         onChange={onEmailChange}
-        style={styles.input}
         required
+        className="p-3 mb-4 border border-gray-300 text-base rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
         type="password"
         placeholder="Пароль"
         value={password}
         onChange={onPasswordChange}
-        style={styles.input}
         required
+        className="p-3 mb-4 border border-gray-300 text-base rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <Button style={styles.button}>Войти</Button>
+      <Button className="h-[50px] text-base">Войти</Button>
     </form>
   );
 }
-
-const styles = {
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  input: {
-    padding: '12px',
-    marginBottom: '16px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-  },
-  button: {
-    padding: '12px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    height: '50px',
-  },
-};
