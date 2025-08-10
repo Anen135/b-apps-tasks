@@ -47,12 +47,13 @@ export default function SidebarLayout({ children }) {
         </div>
 
         <ul style={{ listStyle: 'none', padding: '20px', margin: 0 }}>
-          <li style={{ marginBottom: '10px' }}><Link href="/"        >Главная</Link>   </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/tasks/my-tasks">Мои задачи</Link></li>
-          <li style={{ marginBottom: '10px' }}><Link href="/tasks"   >Задачи</Link>    </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/editor"  >Редактор</Link>  </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/test/api">Тест API</Link>  </li>
-          <li style={{ marginBottom: '10px' }}><Link href="/login"   >Вход</Link>      </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/"              >Главная</Link>         </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/tasks/my-tasks">Мои задачи</Link>      </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/tasks"         >Задачи</Link>          </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/editor"        >Редактор</Link>        </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/test"          >Настройки</Link>       </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/test/api"      >Тест API</Link>        </li>
+          <li style={{ marginBottom: '10px' }}><Link href="/login"         >Вход</Link>            </li>
         </ul>
       </div>
 
