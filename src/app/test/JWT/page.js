@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
@@ -64,7 +65,9 @@ function UserData({ user }) {
                 <p><strong>Email:</strong> {user.email || 'Не указано'}</p>
                 <p><strong>ID:</strong> {user.id || 'Не указано'}</p>
                 <p><strong>Login:</strong> {user.login || 'Не указано'}</p>
-                <p><strong>Теги:</strong> <Tags tags={user.tags} /></p>
+                <div>
+                    <strong>Теги:</strong> <Tags tags={user.tags} />
+                </div>
             </div>
         </div>
     );
@@ -121,6 +124,7 @@ export default function JWT() {
 
     return (
         <main style={{ padding: '2rem', fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", maxWidth: 900, margin: '0 auto' }}>
+            <Breadcrumbs />
             <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>JWT Token & Session Debug</h1>
 
             <section style={{ marginBottom: '2rem' }}>

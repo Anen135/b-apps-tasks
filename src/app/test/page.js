@@ -1,21 +1,39 @@
-'use client'
-import Link from "next/link";
+"use client";
 
-export default function TestRoutePage() {
+import NavPanel from "@/components/NavPanel";
+import { FiHome, FiCpu, FiKey } from "react-icons/fi";
 
+export default function Page() {
+    const links = [
+        {
+            href: "/",
+            label: "Главная",
+            description: "Переход на главную страницу",
+            icon: <FiHome size={24} />,
+        },
+        {
+            href: "/test/api",
+            label: "API",
+            description: "Автоматический тест API путей",
+            icon: <FiCpu size={24} />,
+        },
+        {
+            href: "/test/JWT",
+            label: "JWT",
+            description: "Инструменты тестирования JWT",
+            icon: <FiKey size={24} />,
+        },
+        {
+            href: "/test",
+            label: "Основное меню тестирования",
+            description: "Ты находишься здесь, baka",
+            icon: <FiKey size={24} />,
+        }
+    ];
 
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 py-12">
-        <Link href={"/test/api"}>
-            <button className="inline-block rounded-md bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition">
-                API
-            </button>
-        </Link>
-        <Link href={"/test/JWT"}>
-            <button className="inline-block rounded-md bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition">
-                JWT
-            </button>
-        </Link>
-    </main>
-  );
+    return (
+        <main className="p-20 max-w-4xl mx-auto min-h-screen font-sans bg-background text-foreground">
+            <NavPanel links={links} />
+        </main>
+    );
 }
