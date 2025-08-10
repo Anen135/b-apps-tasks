@@ -13,6 +13,7 @@ export async function downloadImage(url, filename) {
 }
 
 export async function deleteImage(filename) {
+  if (filename == "unset_avatar.png") return
   const filepath = path.resolve('./public/avatars', filename)
   await fs.promises.unlink(filepath)
 }

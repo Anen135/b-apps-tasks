@@ -1,12 +1,20 @@
-// src/components/login/GitHubLoginButton.js
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { signIn } from 'next-auth/react';
 import { FaGithub } from 'react-icons/fa';
 
 export default function GitHubLoginButton() {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    await signIn('github');
+  };
+
   return (
     <Button
-      onClick={() => signIn('github')}
+      onClick={handleClick}
+      disabled={loading}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -16,10 +24,11 @@ export default function GitHubLoginButton() {
         fontSize: '16px',
         backgroundColor: '#24292e',
         color: '#ffffff',
+        cursor: loading ? 'not-allowed' : 'pointer',
       }}
     >
       <FaGithub size={20} />
-      Войти через GitHub
+      {loading ? 'Загрузка...' : 'Войти через GitHub'}
     </Button>
   );
 }
