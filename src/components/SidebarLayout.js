@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Loading } from '@/components/Loading';
+
 import { FaBars, FaTimes } from 'react-icons/fa';
-import "@/styles/SidebarLayout.module.css";
 
 export default function SidebarLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +19,7 @@ export default function SidebarLayout({ children }) {
       {/* Sidebar */}
       <div
         className={`
-          text-white overflow-hidden flex-shrink-0 transition-width duration-300 ease-in-out
+          text-white overflow-hidden flex-shrink-0 transition-width duration-300 ease-in-out z-10
           ${isOpen ? 'w-64' : 'w-0'}
         `}
         style={{
@@ -44,6 +44,7 @@ export default function SidebarLayout({ children }) {
             <FaTimes />
           </button>
         </div>
+
         <ul className="list-none p-5 m-0">
           {[
             { href: '/', label: 'Главная' },
@@ -66,13 +67,13 @@ export default function SidebarLayout({ children }) {
           ))}
         </ul>
       </div>
+
       {/* Контент + Кнопка открытия */}
+      <div className='sparkle'/>
       <div
         className="flex-grow transition-margin duration-300 ease-in-out relative bg-gradient-to-b from-[#250042] to-black"
-        style={{ color: '#aaccff' }}
+        style={{ backgroundColor: '#0f0c29', color: '#aaccff' }}
       >
-        {/* Блестки */}
-        <div className="sparkle-bg" />
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
@@ -85,7 +86,6 @@ export default function SidebarLayout({ children }) {
         )}
         {children}
       </div>
-
     </div>
   );
 }
