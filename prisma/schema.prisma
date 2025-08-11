@@ -18,8 +18,8 @@ model Column {
 
 model Task {
   id        String   @id @default(cuid())
-  color     String   @default("#CCCCCC")
   content   String   @default("New Task")
+  color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
   tags      String[]
   position  Int
@@ -43,5 +43,5 @@ model User {
   password  String
   avatarUrl String    @default("avatars/unset_avatar.jpg")
 
-  tasks Task[] @relation("UserTasks")
+  tasks     Task[]    @relation("UserTasks")
 }
