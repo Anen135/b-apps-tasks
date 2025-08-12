@@ -22,6 +22,8 @@ export async function POST(req) {
     return Response.json(task)
   } catch (error) {
     console.error("Error creating task:", error)
+    if (error.code === 'P2002') return Response.json({ error: "Task with this content already exists" }, { status: 400 })
+    else if (error.code === 'P2003') return Response.json({ error: "Column not found" }, { status: 404 })
     return Response.json({ error: "Internal server error" }, { status: 500 })
   }
 }

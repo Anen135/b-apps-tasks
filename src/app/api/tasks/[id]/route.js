@@ -32,7 +32,6 @@ export async function PUT(req, { params }) {
   }
 }
 
-
 export async function DELETE(_, { params }) {
   const { id } = await params
   try {

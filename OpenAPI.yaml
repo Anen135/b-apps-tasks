@@ -1,0 +1,393 @@
+openapi: 3.0.3
+info:
+  title: Konban API
+  version: 1.0.0
+  description: API для Kanban-доски (Next.js v15 + Prisma)
+
+servers:
+  - url: http://b-tasks/api
+
+paths:
+
+  /columns:
+    get:
+      summary: Получить все колонки с задачами
+      responses:
+        '200':
+          description: Список колонок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Column'
+    post:
+      summary: Создать колонку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnCreate'
+      responses:
+        '200':
+          description: Созданная колонка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+        '400':
+          description: Ошибка уникальности
+
+  /columns/{id}:
+    get:
+      summary: Получить колонку по ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Колонка с задачами
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+        '404':
+          description: Не найдена
+    put:
+      summary: Обновить колонку
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColumnUpdate'
+      responses:
+        '200':
+          description: Обновлённая колонка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+    delete:
+      summary: Удалить колонку
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Успешно удалено
+        '404':
+          description: Не найдена
+
+  /tasks:
+    get:
+      summary: Получить все задачи
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    post:
+      summary: Создать задачу
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '200':
+          description: Созданная задача
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{id}:
+    get:
+      summary: Получить задачу по ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Задача
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Не найдена
+    put:
+      summary: Обновить задачу
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '200':
+          description: Обновлённая задача
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    delete:
+      summary: Удалить задачу
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Успешно удалено
+        '404':
+          description: Не найдена
+
+  /users:
+    get:
+      summary: Получить всех пользователей
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Создать пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '200':
+          description: Созданный пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    get:
+      summary: Получить пользователя по ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Не найден
+    put:
+      summary: Обновить пользователя
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Обновлённый пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Удалить пользователя
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Успешно удалено
+        '404':
+          description: Не найден
+
+  /users/{id}/tasks:
+    get:
+      summary: Получить задачи пользователя
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Список задач пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+  /users/me:
+    get:
+      summary: Получить текущего пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Не авторизован
+    delete:
+      summary: Удалить текущего пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Успешно удалено
+        '401':
+          description: Не авторизован
+
+  /users/me/tasks:
+    get:
+      summary: Получить задачи текущего пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    Column:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string, default: "New Column" }
+        color: { type: string, default: "#CCCCCC" }
+        createdAt: { type: string, format: date-time }
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+
+    ColumnCreate:
+      type: object
+      required: [title, color]
+      properties:
+        title: { type: string }
+        color: { type: string }
+
+    ColumnUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        color: { type: string }
+
+    Task:
+      type: object
+      properties:
+        id: { type: string }
+        content: { type: string, default: "New Task" }
+        color: { type: string, default: "#CCCCCC" }
+        createdAt: { type: string, format: date-time }
+        tags:
+          type: array
+          items: { type: string }
+        position: { type: integer }
+        columnId: { type: string }
+        userId: { type: string, nullable: true }
+
+    TaskCreate:
+      type: object
+      required: [content, position, columnId, color]
+      properties:
+        content: { type: string }
+        position: { type: integer }
+        columnId: { type: string }
+        color: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        userId: { type: string, nullable: true }
+
+    TaskUpdate:
+      type: object
+      properties:
+        content: { type: string }
+        position: { type: integer }
+        columnId: { type: string }
+        color: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        userId: { type: string, nullable: true }
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        login: { type: string }
+        email: { type: string, nullable: true }
+        color: { type: string, default: "#CCCCCC" }
+        createdAt: { type: string, format: date-time }
+        tags:
+          type: array
+          items: { type: string }
+        metadata: { type: object }
+        nickname: { type: string, default: "Anonymous" }
+        password: { type: string }
+        avatarUrl: { type: string, default: "avatars/unset_avatar.jpg" }
+
+    UserCreate:
+      type: object
+      required: [login, password, nickname]
+      properties:
+        login: { type: string }
+        password: { type: string }
+        nickname: { type: string }
+        email: { type: string, nullable: true }
+        tags:
+          type: array
+          items: { type: string }
+        color: { type: string }
+        metadata: { type: object }
+        avatarUrl: { type: string }
+
+    UserUpdate:
+      type: object
+      properties:
+        login: { type: string }
+        password: { type: string }
+        nickname: { type: string }
+        email: { type: string, nullable: true }
+        avatarUrl: { type: string }
+        color: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        metadata: { type: object }
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

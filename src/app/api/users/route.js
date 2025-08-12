@@ -24,6 +24,7 @@ export async function POST(req) {
     });
     return Response.json(user);
   } catch (error) {
+    if (error.code === 'P2002') return Response.json({ error: 'User with this login already exists' }, { status: 400 });
     return Response.json({ error: error.message }, { status: 400 });
   }
 }

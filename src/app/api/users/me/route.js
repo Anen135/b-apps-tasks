@@ -56,6 +56,16 @@ export async function DELETE(req) {
     await prisma.user.delete({ where: { id: session.user.id } })
     return Response.json({ success: true })
   } catch (error) {
+    if (error.code === "ENOENT") {
+      if (filename) console.warn(`Failed to delete image ${filename}:`, error)
+      try {
+        await prisma.user.delete({ where: { id: session.user.id } })
+        return Response.json({ success: true })
+      } catch (dbError) {
+        return new Response(JSON.stringify({ error: dbError.message }), { status: 500 })
+      }
+    }
+    if (error.code === "P2025") return new Response(JSON.stringify({ error: "User not found" }), { status: 404 })
     return new Response(JSON.stringify({ error: error.message }), { status: 500 })
   }
 }

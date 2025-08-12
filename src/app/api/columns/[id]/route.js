@@ -15,10 +15,6 @@ export async function GET(_, { params }) {
 export async function PUT(req, { params }) {
   const { id } = await params
   const data = await req.json()
-
-  const existing = await prisma.column.findUnique({ where: { id } })
-  if (!existing) return new Response(JSON.stringify({ error: 'Column not found' }), { status: 404 })
-
   try {
     const updated = await prisma.column.update({
       where: { id },
@@ -37,10 +33,6 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(_, { params }) {
   const { id } = await params
-
-  const existing = await prisma.column.findUnique({ where: { id } })
-  if (!existing) return new Response(JSON.stringify({ error: 'Column not found' }), { status: 404 })
-
   try {
     await prisma.column.delete({ where: { id } })
     return Response.json({ success: true })

@@ -14,6 +14,7 @@ export async function GET() {
     return Response.json(tasks)
   } catch (error) {
     console.error("Ошибка API /my-tasks:", error)
+    if (error.code === "P2025") return Response.json({ error: "User not found" }, { status: 404 })
     return Response.json({ error: "Internal server error" }, { status: 500 })
   }
 }
