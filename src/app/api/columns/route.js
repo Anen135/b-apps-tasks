@@ -10,11 +10,17 @@ export async function GET() {
 
 export async function POST(req) {
   const data = await req.json()
-  const column = await prisma.column.create({
-    data: {
-      title: data.title,
-      color: data.color,
-    }
-  })
-  return Response.json(column)
+
+  try {
+    const column = await prisma.column.create({
+      data: {
+        title: data.title,
+        color: data.color,
+      }
+    })
+    return Response.json(column)
+  } catch (error) {
+    console.error("Error creating column:", error)
+    return Response.json({ error: "Internal server error" }, { status: 500 })
+  }
 }

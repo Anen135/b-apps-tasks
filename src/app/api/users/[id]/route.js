@@ -26,7 +26,7 @@ export async function GET(_, context) {
 }
 
 export async function PUT(req, { params }) {
-  const { id } = params
+  const { id } = await params
   const data = await req.json()
 
   if (data.password) {
