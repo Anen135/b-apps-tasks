@@ -69,10 +69,10 @@ export default function SidebarLayout({ children }) {
       </div>
 
       {/* Контент + Кнопка открытия */}
-      <div className='sparkle'/>
+      {/* <div className='sparkle'/> */}
       <div
         className="flex-grow transition-margin duration-300 ease-in-out relative bg-gradient-to-b from-[#250042] to-black"
-        style={{ backgroundColor: '#0f0c29', color: '#aaccff' }}
+        style={{ backgroundColor: '#1e1665ff', color: '#aaccff' }}  
       >
         {!isOpen && (
           <button
