@@ -26,7 +26,7 @@ export default function SidebarLayout({ children }) {
         >
           <h2 className="text-lg m-0" style={{ color: '#aaccff' }}>
             Меню
-          </h2>
+          </h2> 
           <button
             onClick={() => setIsOpen(false)}
             className="text-xl bg-transparent border-none cursor-pointer"
@@ -45,6 +45,7 @@ export default function SidebarLayout({ children }) {
             { href: '/editor', label: 'Редактор' },
             { href: '/admin', label: 'Настройки' },
             { href: '/test', label: 'Тест' },
+            { href: '/SerpenSys', label: 'СерпенСись' },
             { href: '/login', label: 'Вход' },
           ].map(({ href, label }) => (
             <li key={href} className="mb-2">
