@@ -2,18 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { Loading } from '@/components/Loading';
-
 import { FaBars, FaTimes } from 'react-icons/fa';
 
 export default function SidebarLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session, status } = useSession();
-
-  if (status === 'loading') return <Loading />;
-  if (!session?.user) return <>{children}</>;
-
   return (
     <div className="flex relative" style={{ backgroundColor: '#0f0c29' }}>
       {/* Sidebar */}

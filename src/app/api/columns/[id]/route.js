@@ -25,9 +25,14 @@ export async function PUT(req, { params }) {
     })
     return Response.json(updated)
   } catch (err) {
-    if (err.code === 'P2025') console.error('Column not found')
-    else console.error('Unexpected error:', err)
-    return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
+    if (err.code === 'P2025') {
+      console.error('Column not found')
+      return Response.json({ success: false, error: 'Column not found' }, { status: 404 })
+    }
+    else {
+      console.error('Unexpected error:', err)
+      return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
+    }
   }
 }
 

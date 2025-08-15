@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import styles from "@/styles/components.module.css";
 
@@ -23,7 +24,7 @@ export default function NavPanel({ links }) {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
-              <a
+              <Link
                 href={href}
                 aria-current={isActive ? "page" : undefined}
                 className="block w-full h-full rounded-2xl shadow-inner overflow-hidden"
@@ -55,7 +56,7 @@ export default function NavPanel({ links }) {
                     <p className={styles.description}>{description}</p>
                   </span>
                 </div>
-              </a>
+              </Link>
             </li>
           );
         })}

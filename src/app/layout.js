@@ -1,8 +1,7 @@
 // /app/layout.js
 import { Geist, Geist_Mono } from "next/font/google"
-import SidebarLayout from '@/components/SidebarLayout'
 import Providers from "@/lib/providers"
-import { Toaster } from "sonner"
+import SessionWrapper from "@/components/SessionWrapper"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -25,20 +24,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <SidebarLayout>
-            {children}
-            <Toaster
-              position="top-right"
-              richColors
-              closeButton
-              toastOptions={{
-                className: "bg-background text-foreground",
-                style: {
-                  fontFamily: "var(--font-geist-sans)",
-                },
-              }}
-            />
-          </SidebarLayout>
+          <SessionWrapper>{children}</SessionWrapper>
         </Providers>
       </body>
     </html>

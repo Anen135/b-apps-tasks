@@ -136,6 +136,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '404':
+          description: Не найдена
     delete:
       summary: Удалить задачу
       parameters:
