@@ -78,7 +78,7 @@ export default function MyTasks() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6 min-h-screen">
+    <main className="max-w-3xl mx-auto px-4 py-8 space-y-6 min-h-screen">
       <div className="flex items-center gap-3">
         <ClipboardList className="w-6 h-6 text-blue-600" />
         <h2 className="text-2xl font-bold">Мои задачи</h2>
@@ -97,6 +97,6 @@ export default function MyTasks() {
           </li>
         ))}
       </ul>
-    </div>
+    </main>
   )
 }

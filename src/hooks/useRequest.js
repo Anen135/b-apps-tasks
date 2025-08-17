@@ -1,20 +1,23 @@
 import { useState } from 'react';
 
-function useRequest() {
+export default function useRequest() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
 
-    const request = async (method, url, body = null) => {
+    const request = async (method, url, options = {}) => {
         setLoading(true);
         setError(null);
 
         try {
             const res = await fetch(url, {
                 method,
-                headers: body ? { "Content-Type": "application/json" } : undefined,
-                body: body ? JSON.stringify(body) : null,
+                headers: options.body ? { "Content-Type": "application/json" } : undefined,
+                body: options.body ? JSON.stringify(options.body) : undefined,
+                signal: options.signal,
             });
+
+            if (!res.ok) throw new Error(res.statusText);
 
             const data = await res.json();
             setData(data);
@@ -24,16 +27,16 @@ function useRequest() {
                 data,
             };
         } catch (err) {
-            setError(err.message);
+            setError(err);
             return {
                 step: `${method} ${url}`,
                 success: false,
-                data: { error: err.message },
+                data: { errorText: err.message, error: err.name},
             };
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     return { loading, data, error, request };
 }

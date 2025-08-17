@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import SidebarLayout from '@/components/SidebarLayout'
-import { Loading } from '@/components/Loading'
+import { LoadingPage } from '@/components/Loading'
 import { Toaster } from 'sonner'
 
 export default function SessionWrapper({ children }) {
@@ -11,7 +11,7 @@ export default function SessionWrapper({ children }) {
     return (
         <>
             {
-                status === 'loading' ? <Loading /> :
+                status != 'loading' ? <LoadingPage /> :
                     data?.user ? <>
                         <SidebarLayout>{children}</SidebarLayout>
                         <Toaster

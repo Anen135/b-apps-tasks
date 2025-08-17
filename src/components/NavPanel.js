@@ -5,13 +5,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import styles from "@/styles/components.module.css";
+import sparkle from "@/styles/SparkleBackground.module.css";
 
 export default function NavPanel({ links }) {
   const pathname = usePathname();
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   return (
-    <aside className="bg-gradient-to-br from-indigo-50 via-white to-indigo-50 rounded-2xl shadow-2xl p-8 max-w-md mx-auto">
+    <aside className="rounded-2xl shadow-2xl p-8 max-w-md mx-auto">
       <ul className="space-y-6">
         {links.map(({ href, label, description, icon }, index) => {
           const isActive = pathname === href;
@@ -24,6 +25,7 @@ export default function NavPanel({ links }) {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
+              <span className={sparkle.sparkle}></span>
               <Link
                 href={href}
                 aria-current={isActive ? "page" : undefined}
@@ -40,9 +42,7 @@ export default function NavPanel({ links }) {
                   `}
                 >
                   {/* Передняя сторона */}
-                  <span
-                    className={`${styles.backfaceHidden} absolute inset-0 flex flex-col items-center justify-center px-6 space-y-2`}
-                  >
+                  <span className={`${styles.backfaceHidden} absolute inset-0 flex flex-col items-center justify-center px-6 space-y-2`} >
                     <span className="text-indigo-600">
                       {icon || <FiArrowRight size={28} />}
                     </span>
@@ -50,9 +50,7 @@ export default function NavPanel({ links }) {
                   </span>
 
                   {/* Задняя сторона */}
-                  <span
-                    className={`${styles.backfaceHidden} absolute inset-0 flex flex-col items-center justify-center bg-indigo-600 text-white rounded-2xl text-sm px-6 ${styles.rotateX180}`}
-                  >
+                  <span className={`${styles.backfaceHidden} absolute inset-0 flex flex-col items-center justify-center bg-indigo-600 text-white rounded-2xl text-sm px-6 ${styles.rotateX180}`} >
                     <p className={styles.description}>{description}</p>
                   </span>
                 </div>
