@@ -18,20 +18,16 @@ export async function GET(_, context) {
     }
   })
 
-  if (!user) {
-    return Response.json({ error: 'User not found' }, { status: 404 })
-  }
+  if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
 
   return Response.json(user)
 }
 
 export async function PUT(req, { params }) {
-  const { id } = params
+  const { id } = await params
   const data = await req.json()
 
-  if (data.password) {
-    data.password = await bcrypt.hash(data.password, 10)
-  }
+  if (data.password) data.password = await bcrypt.hash(data.password, 10)
 
   try {
     const updated = await prisma.user.update({
@@ -49,6 +45,7 @@ export async function PUT(req, { params }) {
     })
     return Response.json(updated)
   } catch (error) {
+    if (error.code === 'P2025') return Response.json({ error: 'User not found' }, { status: 404 })
     return Response.json({ error: error.message }, { status: 400 })
   }
 }
@@ -60,9 +57,7 @@ export async function DELETE(_, { params }) {
     select: { avatarUrl: true }
   });
 
-  if (!user) {
-    return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
-  }
+  if (!user) return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
 
   try {
     if (user.avatarUrl) {

@@ -40,14 +40,26 @@ export const authOptions = {
     },
 
     async jwt({ token, user }) {
-      // user есть только при первом входе
+      // Если юзер только что вошёл
       if (user) {
-        token.sub = user.id
-        token.login = user.login
-        token.tags = user.tags || []
+        token.sub = user.id;
+        token.login = user.login;
+        token.tags = user.tags || [];
+        return token;
       }
-      return token
+
+      // Если update() вызван позже — подгружаем актуальные данные из БД
+      if (token.sub) {
+        const dbUser = await findUserByLogin(token.login);
+        if (dbUser) {
+          token.login = dbUser.login;
+          token.tags = dbUser.tags || [];
+        }
+      }
+
+      return token;
     },
+
 
     async session({ session, token }) {
       session.user.id = token.sub

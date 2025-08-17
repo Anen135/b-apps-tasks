@@ -1,36 +1,63 @@
 "use client";
 
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default function Breadcrumbs() {
-  const pathname = usePathname(); // например: "/tests/api/extra"
+  const pathname = usePathname();
 
-  if (!pathname) return null;
+  const segments = useMemo(() => {
+    if (!pathname) return [];
+    return pathname.split("/").filter(Boolean);
+  }, [pathname]);
 
-  // Убираем первый пустой элемент (так как split("/"...) даст ["", "tests", "api"])
-  const pathSegments = pathname.split("/").filter(Boolean);
+  const buildPath = (index) =>
+    "/" + segments.slice(0, index + 1).join("/");
+
+  if (segments.length === 0) {
+    return null; // скрыть, если мы на главной
+  }
 
   return (
-    <nav style={{ padding: "8px 0" }}>
-      {pathSegments.map((segment, index) => {
-        const href = "/" + pathSegments.slice(0, index + 1).join("/");
-        const label = decodeURIComponent(segment);
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link href="/">Home</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
 
-        const isLast = index === pathSegments.length - 1;
+        {segments.map((segment, index) => {
+          const href = buildPath(index);
+          const isLast = index === segments.length - 1;
+          const label =
+            segment.charAt(0).toUpperCase() + segment.slice(1);
 
-        return (
-          <span key={href}>
-            {isLast ?
-              <span style={{ fontWeight: "bold" }}>{label}</span>
-              :
-              <Link href={href} style={{ color: "blue", textDecoration: "underline" }}>
-                {label}
-              </Link>}
-            {index < pathSegments.length - 1 && " / "}
-          </span>
-        );
-      })}
-    </nav>
+          return (
+            <React.Fragment key={href}>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{decodeURIComponent(label)}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link href={href}>{decodeURIComponent(label)}</Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </React.Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

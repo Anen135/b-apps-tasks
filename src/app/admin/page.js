@@ -3,7 +3,7 @@
 import NavPanel from "@/components/NavPanel";
 import { FiHome, FiTag, FiUser } from "react-icons/fi";
 
-export default function Page() {
+export default function AdminPage() {
   const links = [
     {
       href: "/",

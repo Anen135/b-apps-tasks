@@ -1,7 +1,7 @@
 "use client";
 
 import NavPanel from "@/components/NavPanel";
-import { FiHome, FiCpu, FiKey } from "react-icons/fi";
+import { FiHome, FiCpu, FiKey, FiAirplay} from "react-icons/fi";
 
 export default function Page() {
     const links = [
@@ -24,6 +24,12 @@ export default function Page() {
             icon: <FiKey size={24} />,
         },
         {
+            href: "/test/dependencies",
+            label: "Зависимости",
+            description: "Тестирование зависимостей",
+            icon: <FiAirplay size={24} />,
+        },
+        {
             href: "/test",
             label: "Основное меню тестирования",
             description: "Ты находишься здесь, baka",
@@ -32,7 +38,7 @@ export default function Page() {
     ];
 
     return (
-        <main className="p-20 max-w-4xl mx-auto min-h-screen font-sans bg-transparent">
+        <main className="pt-20 max-w-4xl mx-auto min-h-screen font-sans bg-transparent">
             <NavPanel links={links} />
         </main>
     );
