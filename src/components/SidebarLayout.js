@@ -21,7 +21,7 @@ export default function SidebarLayout({ children }) {
         <div className="flex justify-between items-center px-4 py-3 border-b border-[var(--sidebar-border)]" >
           <h2 className="text-lg m-0">
             Меню
-          </h2>
+          </h2> 
           <button
             onClick={() => setIsOpen(false)}
             className="text-xl bg-transparent border-none cursor-pointer"
@@ -39,6 +39,7 @@ export default function SidebarLayout({ children }) {
             { href: '/editor', label: 'Редактор' },
             { href: '/admin', label: 'Настройки' },
             { href: '/test', label: 'Тест' },
+            { href: '/SerpenSys', label: 'СерпенСись' },
             { href: '/login', label: 'Вход' },
           ].map(({ href, label }) => (
             <li key={href} className="mb-2">
