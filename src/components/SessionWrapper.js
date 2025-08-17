@@ -11,7 +11,7 @@ export default function SessionWrapper({ children }) {
     return (
         <>
             {
-                status != 'loading' ? <LoadingPage /> :
+                status === 'loading' ? <LoadingPage /> :
                     data?.user ? <>
                         <SidebarLayout>{children}</SidebarLayout>
                         <Toaster
