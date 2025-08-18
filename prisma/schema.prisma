@@ -19,29 +19,28 @@ model Column {
 model Task {
   id        String   @id @default(cuid())
   content   String   @default("New Task")
+  position  Int
+  columnId  String
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
   tags      String[]
-  position  Int
-  columnId  String
-  column    Column   @relation("ColumnTasks", fields: [columnId], references: [id])
   userId    String?
+  column    Column   @relation("ColumnTasks", fields: [columnId], references: [id])
   user      User?    @relation("UserTasks", fields: [userId], references: [id])
 
   @@index([columnId, position])
 }
 
 model User {
-  id        String    @id @default(cuid())
-  login     String    @unique
-  email     String?   @unique
-  color     String    @default("#CCCCCC")
-  createdAt DateTime  @default(now())
-  tags      String[]
-  metadata  Json      @default("{}")
-  nickname  String    @default("Anonymous")
+  id        String   @id @default(cuid())
+  login     String   @unique
   password  String
-  avatarUrl String    @default("avatars/unset_avatar.jpg")
-
-  tasks     Task[]    @relation("UserTasks")
+  avatarUrl String   @default("avatars/unset_avatar.jpg")
+  color     String   @default("#CCCCCC")
+  createdAt DateTime @default(now())
+  tags      String[]
+  nickname  String   @default("Anonymous")
+  email     String?  @unique
+  metadata  Json     @default("{}")
+  tasks     Task[]   @relation("UserTasks")
 }

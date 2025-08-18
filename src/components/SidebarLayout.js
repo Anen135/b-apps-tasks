@@ -57,6 +57,7 @@ export default function SidebarLayout({ children }) {
 
       {/* Контент + Кнопка открытия */}
       <div className="flex-grow relative">
+
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
