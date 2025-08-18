@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
+import DataEditor from './DataEditor';
 
 export default function DataTable({ 
   data, 
@@ -8,12 +9,13 @@ export default function DataTable({
   enableSearch = true,
   enableSort = true,
   enablePagination = true,  
-  onEdit
 }) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState(columns[0]?.key || '');
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [editingRow, setEditingRow] = useState(null); 
 
   // фильтрация
   const filtered = useMemo(() => {
@@ -85,7 +87,7 @@ export default function DataTable({
                 {sortKey === col.key && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
               </th>
             ))}
-            {onEdit && <th className="border px-4 py-2">Действия</th>}
+            <th className="border px-4 py-2">Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -96,20 +98,30 @@ export default function DataTable({
                   {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}
-              {onEdit && (
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => onEdit(row)}
-                    className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
-                  >
-                    Редактировать
-                  </button>
-                </td>
-              )}
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => setEditingRow(row)}
+                  className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+                >
+                  Редактировать
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {editingRow && (
+        <div className="mt-4">
+          <DataEditor
+            row={editingRow}
+            onSave={(updated) => {
+              console.log("Сохранили:", updated);
+              setEditingRow(null);
+            }}
+          />
+        </div>
+      )}
 
       {enablePagination && totalPages > 1 && (
         <div className="flex gap-2 mt-4">

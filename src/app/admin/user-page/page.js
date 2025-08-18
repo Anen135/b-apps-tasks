@@ -27,12 +27,12 @@ export default function DemoUsersPage() {
   const columns = [
     { key: 'login', label: 'Логин' },
     { key: 'nickname', label: 'Ник' },
-    { key: 'email', label: 'Email' }, // у тебя email опциональный
+    { key: 'email', label: 'Email' },
     { key: 'color', label: 'Цвет', render: val => (
       <div className="flex items-center gap-2">
         <span 
           className="w-4 h-4 rounded-full border" 
-          style={{ background: val }} 
+          style={{ background: val }}
         />
         {val}
       </div>
