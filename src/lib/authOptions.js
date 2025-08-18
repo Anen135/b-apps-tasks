@@ -31,6 +31,7 @@ export const authOptions = {
           login: user.login,
           name: user.name,
           image: user.image,
+          email: user.email,
         })
       }
       user.id = existingUser.id

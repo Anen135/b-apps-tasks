@@ -11,6 +11,7 @@ export default function SidebarLayout({ children }) {
       {/* Sidebar */}
       <div
         className={`
+          min-h-screen
           overflow-hidden flex-shrink-0 z-10
           transition-[width] duration-300 ease-in-out
           ${isOpen ? 'w-64' : 'w-0'}

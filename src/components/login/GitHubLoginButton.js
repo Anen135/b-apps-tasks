@@ -10,8 +10,8 @@ export default function GitHubLoginButton() {
     setLoading(true);
     try {
       await signIn('github');
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 

@@ -18,6 +18,12 @@ export default function AdminPage() {
       icon: <FiTag size={24} />,
     },
     {
+      href: "/admin/user-page",
+      label: "Таблица пользователя",
+      description: "Просмотреть данные пользователя",
+      icon: <FiTag size={24} />,
+    },
+    {
       href: "/admin",
       label: "Настройки администратора",
       description: "Страница где ты делаешь бум бум",

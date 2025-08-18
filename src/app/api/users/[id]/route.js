@@ -11,6 +11,8 @@ export async function GET(_, context) {
       id: true,
       login: true,
       nickname: true,
+      metadata: true,
+      email: true,
       avatarUrl: true,
       color: true,
       tags: true,
@@ -36,6 +38,7 @@ export async function PUT(req, { params }) {
       select: {
         id: true,
         login: true,
+        email: true,
         nickname: true,
         avatarUrl: true,
         color: true,

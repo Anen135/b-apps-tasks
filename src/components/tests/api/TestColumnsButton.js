@@ -14,6 +14,12 @@ export default function TestColumnsButton({ loading, runTest, setLoading, setErr
       results.push(colCreate);
       const column = colCreate.data;
 
+      const duplicateColCreate = await runTest("POST", "/api/columns", {
+        title: "Test Column",
+        color: "#FFEEAA"
+      });
+      results.push(duplicateColCreate);
+
       results.push(await runTest("GET", "/api/columns"));
       results.push(await runTest("GET", `/api/columns/${column.id}`));
       results.push(await runTest("GET", `/api/columns/fake-id-123`));
