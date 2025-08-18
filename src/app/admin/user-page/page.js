@@ -17,6 +17,12 @@ export default function DemoUsersPage() {
     const data = await res.json();
     setUsers(data);
     setLoading(false);
+    console.log(data);
+  };
+
+  const handleEdit = (row) => {
+    setEditingRow(null);
+    setEditingRow(row);
   };
 
   useEffect(() => {
@@ -28,6 +34,10 @@ export default function DemoUsersPage() {
     { key: 'login', label: 'Логин' },
     { key: 'nickname', label: 'Ник' },
     { key: 'email', label: 'Email' },
+    { key: 'avatarUrl', label: 'Аватар' },
+    { key: 'metadata', label: 'Метаданные', render: val => (
+      <span className="text-sm text-gray-600">{JSON.stringify(val)}</span>
+    ) },
     { key: 'color', label: 'Цвет', render: val => (
       <div className="flex items-center gap-2">
         <span 

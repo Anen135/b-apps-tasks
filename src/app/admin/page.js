@@ -18,13 +18,19 @@ export default function AdminPage() {
       icon: <FiTag size={24} />,
     },
     {
+      href: "/admin/tasksCRUD",
+      label: "Задачи",
+      description: "Управление задачами",
+      icon: <FiUser size={24} />,
+    },
+    {
       href: "/admin/user-page",
       label: "Таблица пользователя",
       description: "Просмотреть данные пользователя",
       icon: <FiTag size={24} />,
     },
     {
-      href: "/admin",
+      href: "/admin/custom-form",
       label: "Настройки администратора",
       description: "Страница где ты делаешь бум бум",
       icon: <FiUser size={24} />,
