@@ -3,9 +3,26 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { useSession } from 'next-auth/react';
 
 export default function SidebarLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
+  const links = [
+    { href: '/', label: 'Главная' },
+    { href: '/tasks/my-tasks', label: 'Мои задачи' },
+    { href: '/tasks', label: 'Задачи', tag: 'viewer' },
+    { href: '/editor', label: 'Редактор', tag: 'editor' },
+    { href: '/admin', label: 'Настройки', tag: 'admin' },
+    { href: '/test', label: 'Тест' },
+    { href: '/SerpenSys', label: 'СерпенСись', tag: 'serpensys' },
+    { href: '/news', label: 'Новости' },
+    { href: '/login', label: 'Вход' },
+  ];
+  const filteredLinks = links.filter(link => {
+    if (!link.tag) return true;
+    return session?.user?.tags?.includes(link.tag);
+  });
   return (
     <div className="flex relative">
       {/* Sidebar */}
@@ -22,7 +39,7 @@ export default function SidebarLayout({ children }) {
         <div className="flex justify-between items-center px-4 py-3 border-b border-[var(--sidebar-border)]" >
           <h2 className="text-lg m-0">
             Меню
-          </h2> 
+          </h2>
           <button
             onClick={() => setIsOpen(false)}
             className="text-xl bg-transparent border-none cursor-pointer"
@@ -33,16 +50,7 @@ export default function SidebarLayout({ children }) {
         </div>
 
         <ul className="list-none p-5 m-0">
-          {[
-            { href: '/', label: 'Главная' },
-            { href: '/tasks/my-tasks', label: 'Мои задачи' },
-            { href: '/tasks', label: 'Задачи' },
-            { href: '/editor', label: 'Редактор' },
-            { href: '/admin', label: 'Настройки' },
-            { href: '/test', label: 'Тест' },
-            { href: '/SerpenSys', label: 'СерпенСись' },
-            { href: '/login', label: 'Вход' },
-          ].map(({ href, label }) => (
+          {filteredLinks.map(({ href, label }) => (
             <li key={href} className="mb-2">
               <Link
                 href={href}

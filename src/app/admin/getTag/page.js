@@ -10,7 +10,7 @@ import Image from "next/image";
 
 
 export default function UserTagPage() {
-  const allTags = ["admin", "test", "editor", "viewer"];
+  const allTags = ["admin", "test", "editor", "viewer", "serpensys"];
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const { loading, request } = useRequest();

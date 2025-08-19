@@ -7,7 +7,6 @@ import { Toaster } from 'sonner'
 
 export default function SessionWrapper({ children }) {
     const { data, status } = useSession()
-    console.warn('SessionWrapper', !data?.user, data, status)
     return (
         <>
             {
