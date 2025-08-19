@@ -19,7 +19,7 @@ export async function POST(req) {
   } catch (error) {
     console.error("Error creating column:", error)
     if (error.code === 'P2002') return Response.json({ error: "Column with this title already exists" }, { status: 400 })
-    else if (error.code === 'P2003') return Response.json({ error: "Column not found" }, { status: 404 })
+    else if (error.code === 'P2003') return Response.json({ error: "Foreign key constraint failed. Please check related resource IDs." }, { status: 400 })
     return Response.json({ error: "Internal server error" }, { status: 500 })
   }
 }

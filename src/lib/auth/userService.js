@@ -14,7 +14,7 @@ export async function findUserByLogin(login) {
  * Создать нового пользователя с защитой от гонок через транзакцию
  * Временно картинка не создаётся, пока не будет облачного хранилища
  */
-export async function createUser({ login, name, image }) {
+export async function createUser({ login, name, image, email }) {
   const existingUser = await prisma.user.findUnique({ where: { login } });
   if (existingUser) {
     return existingUser;
@@ -30,6 +30,7 @@ export async function createUser({ login, name, image }) {
         login,
         nickname: name || "Anonymous",
         avatarUrl,
+        email,
         password: "",
         tags: [],
       },

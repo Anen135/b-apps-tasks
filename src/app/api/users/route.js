@@ -26,6 +26,7 @@ export async function GET(request) {
       login: true,
       nickname: true,
       avatarUrl: true,
+      email: true,
       color: true,
       tags: true,
       createdAt: true,
@@ -40,7 +41,7 @@ export async function GET(request) {
 
 export async function POST(req) {
   const body = await req.json();
-  const { login, password, nickname, tags = [], color } = body;
+  const { login, password, nickname, tags = [], color, email, avatarUrl} = body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
@@ -49,6 +50,8 @@ export async function POST(req) {
         login,
         password: hashedPassword,
         nickname,
+        email,
+        avatarUrl,
         tags,
         color,
       },

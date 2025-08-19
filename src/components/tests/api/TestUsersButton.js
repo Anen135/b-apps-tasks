@@ -20,6 +20,19 @@ export default function TestUsersButton({ loading, runTest, setLoading, setError
       });
       results.push(user);
 
+      const duplicateUser = await runTest("POST", "/api/users", {
+        login, // same login as above
+        password: "password123",
+        nickname: `${nickname} Duplicate`,
+        color: "#FFDDDD",
+        tags: ["test"],
+        avatarUrl: null
+      });
+      results.push({
+        ...duplicateUser,
+        test: "Duplicate user creation should fail"
+      });
+
       const userId = user.data.id;
 
       results.push(await runTest("GET", "/api/users"));

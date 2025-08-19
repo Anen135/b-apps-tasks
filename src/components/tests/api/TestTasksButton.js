@@ -24,6 +24,25 @@ export default function TestTasksButton({ loading, runTest, setLoading, setError
       results.push(task);
       const taskId = task.data.id;
 
+      // Test duplicate task creation
+      const duplicateTask = await runTest("POST", "/api/tasks", {
+        content: "Test Task",
+        position: 0,
+        columnId,
+        color: "#FF0000",
+        tags: ["urgent"]
+      });
+      results.push(duplicateTask);
+      // Test invalid columnId
+      const invalidColumnTask = await runTest("POST", "/api/tasks", {
+        content: "Invalid Column Task",
+        position: 0,
+        columnId: "non-existent-column-id",
+        color: "#FF0000",
+        tags: ["invalid"]
+      });
+      results.push(invalidColumnTask);
+
       results.push(await runTest("GET", "/api/tasks"));
       results.push(await runTest("GET", `/api/tasks/${taskId}`));
       results.push(await runTest("GET", `/api/tasks/fake-id-123`));

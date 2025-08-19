@@ -36,6 +36,11 @@ export default function SaveButton({
           text: "text-base",
           icon: 22,
         }
+      : size === "icon" ? {
+          pad: "px-2 py-2",
+          text: "text-sm",
+          icon: 18
+      }
       : {
           pad: "px-4 py-2.5",
           text: "text-sm",
@@ -86,7 +91,7 @@ export default function SaveButton({
             onClick={doSave}
             disabled={isLoading}
             className={[
-              "group relative inline-flex select-none items-center justify-center gap-2",
+              "group relative inline-flex select-none items-center justify-center",
               "rounded-2xl font-medium tracking-[-0.01em]",
               sizing.pad,
               sizing.text,
@@ -101,6 +106,7 @@ export default function SaveButton({
               // отключено
               isLoading ? "opacity-80 cursor-not-allowed" : "",
               isError   ? "bg-red-600 shadow-lg shadow-red-600/30 hover:bg-red-500" : "",
+              size==="icon" ? "gap-0" : "gap-2",
               // лёгкий стеклянный вид
               "ring-1 ring-white/10 backdrop-blur-sm",
               className,
@@ -128,7 +134,7 @@ export default function SaveButton({
 
             {/* Текст */}
             <span className="relative">
-              {isSuccess ? "Сохранено" : isError ? "Ошибка" : label}
+              {size=="icon" ? "" : isSuccess ? "Сохранено" : isError ? "Ошибка" : label}
             </span>
 
             {/* Микровспышка успеха */}
