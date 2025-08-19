@@ -1,13 +1,13 @@
 'use client';
 import { useState, useMemo } from 'react';
 
-export default function DataTable({ 
-  data, 
-  columns, 
-  itemsPerPage = 10, 
+export default function DataTable({
+  data,
+  columns,
+  itemsPerPage = 10,
   enableSearch = true,
   enableSort = true,
-  enablePagination = true,  
+  enablePagination = true,
   onEdit
 }) {
   const [search, setSearch] = useState('');
@@ -31,11 +31,14 @@ export default function DataTable({
       res = [...res].sort((a, b) => {
         const aVal = a[sortKey];
         const bVal = b[sortKey];
-
-        if (aVal instanceof Date || bVal instanceof Date) {
+        const aDate = new Date(aVal);
+        const bDate = new Date(bVal);
+        const aIsDate = !isNaN(aDate.getTime());
+        const bIsDate = !isNaN(bDate.getTime());
+        if (aIsDate && bIsDate) {
           return sortOrder === 'asc'
-            ? new Date(aVal) - new Date(bVal)
-            : new Date(bVal) - new Date(aVal);
+            ? aDate - bDate
+            : bDate - aDate;
         }
 
         return sortOrder === 'asc'
