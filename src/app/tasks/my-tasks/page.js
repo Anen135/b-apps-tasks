@@ -14,8 +14,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { SketchPicker } from "react-color"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 import {
   Loader2,
   ClipboardList,
@@ -26,6 +35,7 @@ import {
   Tags,
   PaintBucket,
   ListOrdered,
+  Droplet
 } from "lucide-react"
 
 export default function MyTasks() {
@@ -36,6 +46,24 @@ export default function MyTasks() {
   const [hasFetchedTasks, setHasFetchedTasks] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [formData, setFormData] = useState({})
+  const [columns, setColumns] = useState([])
+
+  const fetchColumns = useCallback(async () => {
+    try {
+      const res = await fetch("/api/columns", { method: "GET" })
+      if (!res.ok) throw new Error("Ошибка загрузки колонок")
+      const data = await res.json()
+      setColumns(data)
+    } catch (err) {
+      console.error(err)
+      setColumns([])
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchColumns()
+  }, [fetchColumns])
+
 
   const fetchTasks = useCallback(async () => {
     setLoadingTasks(true)
@@ -147,43 +175,90 @@ export default function MyTasks() {
             <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition dark:bg-zinc-900" style={{ borderLeft: `6px solid ${task.color || "transparent"}` }}>
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">{task.content}</CardTitle>
-                <CardDescription>
-                  Колонка: <span className="font-medium">{task.column?.title}</span>
-                </CardDescription>
+                {editingTask === task.id ? (
+                  <>
+                    {/* Поле "Колонка" */}
+                    <div className="space-y-1">
+                      <label className="text-sm text-muted-foreground">Колонка</label>
+                      <Select
+                        value={formData.columnId?.toString() || ""}
+                        onValueChange={(val) => setFormData({ ...formData, columnId: Number(val) })}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Выберите колонку" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {columns.map((col) => (
+                            <SelectItem key={col.id} value={col.id.toString()}>
+                              {col.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                ) : <CardDescription> Колонка: <span className="font-medium">{task.column.title}</span> </CardDescription>}
               </CardHeader>
 
               <CardContent className="space-y-2">
                 {editingTask === task.id ? (
                   <div className="space-y-3">
-                    <Input
-                      type="number"
-                      placeholder="Позиция"
+
+                    {/* Поле "Позиция" */}
+                    <input
+                      className="w-full border rounded px-2 py-1"
                       value={formData.position}
                       onChange={(e) => setFormData({ ...formData, position: Number(e.target.value) })}
+                      type="number"
+                      placeholder="Позиция"
                     />
+
+                    {/* Color Picker через Popover */}
                     <div className="flex items-center gap-2">
-                      <PaintBucket className="h-4 w-4 text-muted-foreground" />
-                      <SketchPicker
-                        color={formData.color}
-                        onChange={(color) => setFormData({ ...formData, color: color.hex })}
-                        disableAlpha
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Tags className="h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Теги (через запятую)"
-                        value={formData.tags}
-                        onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="flex items-center gap-2"
+                          >
+                            <div
+                              className="h-4 w-4 rounded-full border"
+                              style={{ backgroundColor: formData.color }}
+                            />
+                            <Droplet size={16} />
+                            <span>Выбрать цвет</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-2 w-auto">
+                          <SketchPicker
+                            color={formData.color}
+                            onChange={(color) => setFormData({ ...formData, color: color.hex })}
+                            disableAlpha
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
 
-                    <div className="flex gap-2 pt-2">
-                      <Button onClick={saveTask}>
-                        <Save className="mr-1 h-4 w-4" /> Сохранить
+                    {/* Поле "Теги" */}
+                    <input
+                      className="w-full border rounded px-2 py-1"
+                      value={formData.tags}
+                      onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                      placeholder="Теги (через запятую)"
+                    />
+
+                    {/* Кнопки */}
+                    <div className="flex gap-2">
+                      <Button onClick={saveTask} className="bg-green-600 hover:bg-green-700">
+                        <Save size={16} className="mr-1" /> Сохранить
                       </Button>
-                      <Button variant="outline" onClick={cancelEditing}>
-                        <X className="mr-1 h-4 w-4" /> Отмена
+                      <Button
+                        onClick={cancelEditing}
+                        variant="secondary"
+                        className="bg-gray-400 hover:bg-gray-500 text-white"
+                      >
+                        <X size={16} className="mr-1" /> Отмена
                       </Button>
                     </div>
                   </div>

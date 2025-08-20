@@ -10,7 +10,8 @@ import { ArticleCard } from "@/components/news/ArticleCard"
 // --- mock data --------------------------------------------------------------
 const CATEGORIES = [
   "Все",
-  "Global"
+  "Global",
+  "Design",
 ];
 
 const AUTHORS = {
@@ -33,6 +34,18 @@ const ARTICLES = [
     readTime: 4,
     trending: false,
     tags: ["Global"]
+  },
+  {
+    id: 1,
+    title: "Цветовая тема",
+    category: "Design",
+    excerpt: "У нас цветовая тема: Фиолетовый + Чёрный. Корпоративный стиль. Графовая схема. Контрастный цвет - бирюзовый.",
+    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
+    author: AUTHORS.Anen,
+    date: new Date('2025-08-20').toISOString(),
+    readTime: 4,
+    trending: false,
+    tags: ["Design"]
   }
 ]
 
