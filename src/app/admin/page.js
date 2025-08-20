@@ -28,13 +28,7 @@ export default function AdminPage() {
       label: "Таблица пользователя",
       description: "Просмотреть данные пользователя",
       icon: <FiTag size={24} />,
-    },
-    {
-      href: "/admin/custom-form",
-      label: "Настройки администратора",
-      description: "Страница где ты делаешь бум бум",
-      icon: <FiUser size={24} />,
-    },
+    }
   ];
 
   return (

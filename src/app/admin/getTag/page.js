@@ -7,10 +7,11 @@ import SaveButton from "@/components/CORS/SaveButton";
 import useRequest from "@/hooks/useRequest";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Breadcrumb from '@/components/Breadcrumbs';
 
 
 export default function UserTagPage() {
-  const allTags = ["admin", "test", "editor", "viewer"];
+  const allTags = ["admin", "test", "editor", "viewer", "serpensys"];
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const { loading, request } = useRequest();
@@ -38,7 +39,10 @@ export default function UserTagPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-zinc-900 dark:to-zinc-950 p-6">
+    <main className="min-h-screen flex items-center justify-center flex-col bg-gradient-to-b from-gray-50 to-gray-100 dark:from-zinc-900 dark:to-zinc-950 p-6">
+      <div className="flex items-center mb-6">
+        <Breadcrumb />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

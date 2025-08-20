@@ -7,12 +7,12 @@ export default function ColumnsPage() {
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("#cccccc");
 
-  async function load() {
+  const load = async () => {
     const res = await fetch("/api/columns");
     setColumns(await res.json());
-  }
+  };
 
-  async function createColumn() {
+  const createColumn = async () => {
     await fetch("/api/columns", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -20,12 +20,12 @@ export default function ColumnsPage() {
     });
     setTitle("");
     await load();
-  }
+  };
 
-  async function deleteColumn(id) {
+  const deleteColumn = async id => {
     await fetch(`/api/columns/${id}`, { method: "DELETE" });
     await load();
-  }
+  };
 
   useEffect(() => { load(); }, []);
 

@@ -18,7 +18,7 @@ export default function TasksPage() {
   const [userId, setUserId] = useState("");
   const [tags, setTags] = useState("");
 
-  async function load() {
+  const load = async () => {
     const resTasks = await fetch("/api/tasks");
     setTasks(await resTasks.json());
 
@@ -27,9 +27,9 @@ export default function TasksPage() {
 
     const resUsers = await fetch("/api/users");
     setUsers(await resUsers.json());
-  }
+  };
 
-  async function saveTask() {
+  const saveTask = async () => {
     if (selectedTask) {
       // обновление
       await fetch(`/api/tasks/${selectedTask.id}`, {
@@ -62,15 +62,15 @@ export default function TasksPage() {
 
     clearForm();
     await load();
-  }
+  };
 
-  async function deleteTask(id) {
+  const deleteTask = async (id) => {
     await fetch(`/api/tasks/${id}`, { method: "DELETE" });
     if (selectedTask?.id === id) clearForm();
     await load();
-  }
+  };
 
-  function clearForm() {
+  const clearForm = () => {
     setSelectedTask(null);
     setContent("");
     setColor("#cccccc");
@@ -78,9 +78,9 @@ export default function TasksPage() {
     setColumnId("");
     setUserId("");
     setTags("");
-  }
+  };
 
-  function selectTask(task) {
+  const selectTask = (task) => {
     setSelectedTask(task);
     setContent(task.content);
     setColor(task.color);
@@ -88,15 +88,15 @@ export default function TasksPage() {
     setColumnId(task.columnId);
     setUserId(task.userId || "");
     setTags(task.tags?.join(", ") || "");
-  }
+  };
 
   useEffect(() => {
     load();
   }, []);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Задачи</h2>
+    <div className="mt-20 min-h-screen">
+      <h2 className="text-2xl font-bold mb-4 mx-7">Задачи</h2>
 
       {/* Форма создания/редактирования задачи */}
       <div className="bg-white p-4 rounded shadow mb-6 space-y-3">
