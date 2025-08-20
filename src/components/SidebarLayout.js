@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
+import { LucideHome } from 'lucide-react';
 
 export default function SidebarLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,12 +51,13 @@ export default function SidebarLayout({ children }) {
         </div>
 
         <ul className="list-none p-5 m-0">
-          {filteredLinks.map(({ href, label }) => (
+          {filteredLinks.map(({ href, label, icon=null }) => (
             <li key={href} className="mb-2">
               <Link
                 href={href}
-                className="hover:underline"
-              >
+                className="hover:underline flex items-center gap-2 text-[var(--sidebar-foreground)]"
+                >
+                {icon}
                 {label}
               </Link>
             </li>

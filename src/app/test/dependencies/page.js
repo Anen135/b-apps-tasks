@@ -19,10 +19,10 @@ export default function Page() {
             icon: <FiCrosshair size={24} />,
         },
         {
-            href: "/test/dependencies",
-            label: "Меню выбора тестирования зависимостей",
-            description: "Ты находишься здесь, baka",
-            icon: <FiKey size={24} />,
+            href: "/test/dependencies/news-page",
+            label: "Страница новостей",
+            description: "Пример красивой страницы новостей",
+            icon: <FiCrosshair size={24} />,
         }
     ];
 

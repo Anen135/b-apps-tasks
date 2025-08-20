@@ -95,8 +95,8 @@ export default function TasksPage() {
   }, []);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Задачи</h2>
+    <div className="mt-20 min-h-screen">
+      <h2 className="text-2xl font-bold mb-4 mx-7">Задачи</h2>
 
       {/* Форма создания/редактирования задачи */}
       <div className="bg-white p-4 rounded shadow mb-6 space-y-3">
