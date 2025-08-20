@@ -16,7 +16,7 @@ model Column {
 
   tasks     Task[]   @relation("ColumnTasks")
 
-  createdBy   String? 
+  createdBy   String?
   createdByUser User? @relation("UserColumns", fields: [createdBy], references: [id])
 }
 
