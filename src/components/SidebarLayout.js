@@ -71,7 +71,7 @@ export default function SidebarLayout({ children }) {
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="absolute top-5 left-5 z-50 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]"
+            className="absolute top-5 left-5 z-100 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]"
             aria-label="Открыть меню"
           >
             <FaBars />
