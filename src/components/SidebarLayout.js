@@ -40,13 +40,13 @@ export default function SidebarLayout({ children }) {
       <div
         className={`
           min-h-screen
-          overflow-hidden flex-shrink-0 z-10
-          transition-[width] duration-300 ease-in-out
-          ${isOpen ? 'w-64' : 'w-0'}
+          overflow-hidden
+          transition-[width] duration-200 ease-out
           bg-gradient-to-b from-[var(--sidebar-from)] to-[var(--sidebar-to)] text-[var(--sidebar-foreground)]
+          ${isOpen ? 'w-64' : 'w-0'}
+          fixed top-0 left-0 z-50 md:relative md:z-10
         `}
       >
-
         <div className="flex justify-between items-center px-4 py-3 border-b border-[var(--sidebar-border)]" >
           <h2 className="text-lg m-0">
             Меню

@@ -2,7 +2,7 @@
 
 import NavPanel from "@/components/NavPanel";
 import { FiHome, FiTag, FiUser } from "react-icons/fi";
-
+import ParticlesAnimation from '@/components/login/ParticlesAnimation';
 export default function AdminPage() {
   const links = [
     {
@@ -32,8 +32,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <main className="p-20 max-w-4xl mx-auto min-h-screen font-sans text-foreground">
+    <main className="py-20 px-5 sm:px-3 max-w-4xl mx-auto min-h-screen font-sans text-foreground">
       <NavPanel links={links} />
+      
     </main>
   );
 }
