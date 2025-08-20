@@ -4,21 +4,31 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
-import { LucideHome } from 'lucide-react';
+import {
+  MdHome,
+  MdCheckCircle,
+  MdClipboard,
+  MdEdit,
+  MdSettings,
+  MdInventory,
+  MdQueryStats,
+  MdArticle,
+  MdLogin,
+} from 'react-icons/md';
 
 export default function SidebarLayout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
   const links = [
-    { href: '/', label: 'Главная' },
-    { href: '/tasks/my-tasks', label: 'Мои задачи' },
-    { href: '/tasks', label: 'Задачи', tag: 'viewer' },
-    { href: '/editor', label: 'Редактор', tag: 'editor' },
-    { href: '/admin', label: 'Настройки', tag: 'admin' },
-    { href: '/test', label: 'Тест' },
-    { href: '/SerpenSys', label: 'СерпенСись', tag: 'serpensys' },
-    { href: '/news', label: 'Новости' },
-    { href: '/login', label: 'Вход' },
+    { href: '/', label: 'Главная', icon: <MdHome /> },
+    { href: '/tasks/my-tasks', label: 'Мои задачи', icon: <MdCheckCircle /> },
+    { href: '/tasks', label: 'Задачи', tag: 'viewer', icon: <MdClipboard /> },
+    { href: '/editor', label: 'Редактор', tag: 'editor', icon: <MdEdit /> },
+    { href: '/admin', label: 'Настройки', tag: 'admin', icon: <MdSettings /> },
+    { href: '/test', label: 'Тест', icon: <MdInventory /> },
+    { href: '/SerpenSys', label: 'СерпенСись', tag: 'serpensys', icon: <MdQueryStats /> },
+    { href: '/news', label: 'Новости', icon: <MdArticle /> },
+    { href: '/login', label: 'Вход', icon: <MdLogin /> },
   ];
   const filteredLinks = links.filter(link => {
     if (!link.tag) return true;
