@@ -1,8 +1,9 @@
 // src/app/api/tasks/route.js
 import prisma from '@/lib/prisma'
+import { Columns } from 'lucide-react'
 
 export async function GET() {
-  const tasks = await prisma.task.findMany()
+  const tasks = await prisma.task.findMany({ include: { column: true, user: true} })
   return Response.json(tasks)
 }
 
