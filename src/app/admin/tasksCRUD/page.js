@@ -92,7 +92,7 @@ export default function TasksPage() {
   }, []);
 
   return (
-    <div className="my-5 min-h-screen ">
+    <main className="my-5 min-h-screen transition-all mt-16 md:mt-0 md:ml-16 lg:ml-16">
       <h2 className="text-3xl font-bold mb-6 mx-7 flex items-center gap-2">
         <FaTasks /> Управление задачами
       </h2>
@@ -279,6 +279,6 @@ export default function TasksPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

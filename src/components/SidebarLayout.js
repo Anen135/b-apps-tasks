@@ -77,23 +77,17 @@ export default function SidebarLayout({ children }) {
 
       {/* Контент + Кнопка открытия */}
       <div className="flex-grow relative">
+
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="
-              absolute z-100 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]
-              top-5 left-5
-            "
+            className="absolute top-5 left-5 z-100 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]"
             aria-label="Открыть меню"
           >
             <FaBars />
           </button>
         )}
-
-        <div className={` transition-all ${isOpen ? '' : 'mt-16 md:mt-0 md:ml-16 lg:ml-16'} `} >
-          {children}
-        </div>
-
+        {children}
       </div>
 
     </div>
