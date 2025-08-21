@@ -23,9 +23,9 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       profile(profile) {
         return {
-          id: profile.sub, // Google возвращает "sub" как уникальный id
+          id: profile.sub, 
           name: profile.name,
-          login: profile.email.split("@")[0], // можно генерировать login из почты
+          login: profile.email,
           email: profile.email,
           image: profile.picture,
         }
