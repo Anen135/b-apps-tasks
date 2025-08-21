@@ -16,7 +16,6 @@ export default function TestUsersButton({ loading, runTest, setLoading, setError
         nickname,
         color: "#FFDDDD",
         tags: ["test"],
-        avatarUrl: null
       });
       results.push(user);
 
@@ -26,7 +25,6 @@ export default function TestUsersButton({ loading, runTest, setLoading, setError
         nickname: `${nickname} Duplicate`,
         color: "#FFDDDD",
         tags: ["test"],
-        avatarUrl: null
       });
       results.push({
         ...duplicateUser,
