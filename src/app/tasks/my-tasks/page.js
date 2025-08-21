@@ -182,7 +182,7 @@ export default function MyTasks() {
                       <label className="text-sm text-muted-foreground">Колонка</label>
                       <Select
                         value={formData.columnId?.toString() || ""}
-                        onValueChange={(val) => setFormData({ ...formData, columnId: Number(val) })}
+                        onValueChange={(val) => setFormData({ ...formData, columnId: val })}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Выберите колонку" />
@@ -197,7 +197,7 @@ export default function MyTasks() {
                       </Select>
                     </div>
                   </>
-                ) : <CardDescription> Колонка: <span className="font-medium">{task.column.title}</span> </CardDescription>}
+                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column.color}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column.title}</span> </CardDescription>}
               </CardHeader>
 
               <CardContent className="space-y-2">
