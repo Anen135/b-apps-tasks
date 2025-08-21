@@ -5,7 +5,8 @@ const nextConfig = {
   images: {
     domains: [
       'avatars.githubusercontent.com',
-      'images.unsplash.com' // ← добавь эту строку
+      'images.unsplash.com',
+      'lh3.googleusercontent.com', 
     ],
   },
   webpack: (config) => {
