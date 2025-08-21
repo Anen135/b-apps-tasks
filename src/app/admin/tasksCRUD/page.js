@@ -244,10 +244,8 @@ export default function TasksPage() {
                 <div className="flex-1">
                   <div className="font-medium">{t.content}</div>
                   <div className="text-sm text-gray-500 flex items-center gap-1">
-                    <FaThumbtack /> Позиция: {t.position} | Колонка: {t.column.title} | Пользователь:{" "}
-                    {t.user.nickname ?? t.userId ?? "Not found"}
+                    <FaThumbtack /> Позиция: {t.position} | Колонка: {t.column.title} | Пользователь: {t.user?.nickname || t.user?.userId || "Not found"}
                   </div>
-
                   {t.tags?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {t.tags.map(tag => (
