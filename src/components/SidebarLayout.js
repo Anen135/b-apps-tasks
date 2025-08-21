@@ -43,8 +43,8 @@ export default function SidebarLayout({ children }) {
           overflow-hidden
           transition-[width] duration-200 ease-out
           bg-gradient-to-b from-[var(--sidebar-from)] to-[var(--sidebar-to)] text-[var(--sidebar-foreground)]
-          ${isOpen ? 'w-64' : 'w-0'}
-          fixed top-0 left-0 z-50 md:relative md:z-10
+          ${isOpen ? 'w-64 flex-shrink-0' : 'w-0'}
+          fixed top-0 left-0 z-50 md:relative md:z-10 
         `}
       >
         <div className="flex justify-between items-center px-4 py-3 border-b border-[var(--sidebar-border)]" >
@@ -61,12 +61,12 @@ export default function SidebarLayout({ children }) {
         </div>
 
         <ul className="list-none p-5 m-0">
-          {filteredLinks.map(({ href, label, icon=null }) => (
+          {filteredLinks.map(({ href, label, icon = null }) => (
             <li key={href} className="mb-2">
               <Link
                 href={href}
                 className="hover:underline flex items-center gap-2 text-[var(--sidebar-foreground)]"
-                >
+              >
                 {icon}
                 {label}
               </Link>
@@ -77,18 +77,25 @@ export default function SidebarLayout({ children }) {
 
       {/* Контент + Кнопка открытия */}
       <div className="flex-grow relative">
-
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="absolute top-5 left-5 z-100 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]"
+            className="
+              absolute z-100 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]
+              top-5 left-5
+            "
             aria-label="Открыть меню"
           >
             <FaBars />
           </button>
         )}
-        {children}
+
+        <div className={` transition-all ${isOpen ? '' : 'mt-16 md:mt-0 md:ml-16 lg:ml-16'} `} >
+          {children}
+        </div>
+
       </div>
+
     </div>
   );
 }

@@ -52,7 +52,8 @@ html, body {
 }
 
 :root {
-  --button-color: rgb(31, 0, 58);
+  --button-color: rgb(75, 0, 142);
+  --button-hover-color: rgb(117, 24, 189);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --sidebar-from: #12001f;
