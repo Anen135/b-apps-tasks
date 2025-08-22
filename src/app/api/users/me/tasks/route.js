@@ -34,6 +34,7 @@ export async function PUT(req) {
         tags: data.tags ?? [],
         userId: data.userId ?? null,
       },
+      include: { column: true },
     })
     return Response.json(updated)
   } catch (error) {

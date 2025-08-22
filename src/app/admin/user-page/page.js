@@ -35,24 +35,38 @@ export default function DemoUsersPage() {
     { key: 'nickname', label: 'Ник' },
     { key: 'email', label: 'Email' },
     { key: 'avatarUrl', label: 'Аватар' },
-    { key: 'metadata', label: 'Метаданные', render: val => (
-      <span className="text-sm text-gray-600">{JSON.stringify(val)}</span>
-    ) },
-    { key: 'color', label: 'Цвет', render: val => (
-      <div className="flex items-center gap-2">
-        <span 
-          className="w-4 h-4 rounded-full border" 
-          style={{ background: val }}
-        />
-        {val}
-      </div>
-    ) },
-    { key: 'tags', label: 'Теги', render: val => (
-      <span className="text-sm text-gray-600">{val.join(', ')}</span>
-    ) },
-    { key: 'createdAt', label: 'Создан', render: val => (
-      new Date(val).toLocaleDateString('ru-RU')
-    ) }
+    {
+      key: 'metadata',
+      label: 'Метаданные',
+      render: val => (
+        <span className="text-sm text-gray-600">{JSON.stringify(val)}</span>
+      )
+    },
+    {
+      key: 'color',
+      label: 'Цвет',
+      render: val => (
+        <div className="flex items-center gap-2">
+          <span
+            className="w-4 h-4 rounded-full border"
+            style={{ background: val }}
+          />
+          {val}
+        </div>
+      )
+    },
+    {
+      key: 'tags',
+      label: 'Теги',
+      render: val => (
+        <span className="text-sm text-gray-600">{val.join(', ')}</span>
+      )
+    },
+    {
+      key: 'createdAt',
+      label: 'Создан',
+      render: val => new Date(val).toLocaleDateString('ru-RU')
+    }
   ];
 
   // сохранение изменений
@@ -66,23 +80,37 @@ export default function DemoUsersPage() {
     fetchUsers(); // перезагружаем список
   };
 
+  // удаление пользователя
+  const handleDelete = async (row) => {
+    if (!confirm(`Удалить пользователя ${row.login}?`)) return;
+    await fetch(`/api/users/${row.id}`, { method: 'DELETE' });
+    fetchUsers(); // перезагружаем список
+  };
+
   if (loading) return <Spinner />;
 
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">Демо: Пользователи</h1>
 
-      <DataTable 
+      <DataTable
         data={users}
         columns={columns}
         itemsPerPage={5}
-        onEdit={setEditingRow}
+        onEdit={handleEdit}
+        onDelete={handleDelete} // ✅ добавлено
       />
 
       {editingRow && (
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Редактирование пользователя</h2>
-          <DataEditor row={editingRow} onSave={handleSave} />
+          <h2 className="text-xl font-semibold mb-2">
+            Редактирование пользователя
+          </h2>
+          <DataEditor
+            row={editingRow}
+            onSave={handleSave}
+            onDelete={() => handleDelete(editingRow)}
+          />
         </div>
       )}
     </div>
