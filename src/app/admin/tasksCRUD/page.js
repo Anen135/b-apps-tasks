@@ -92,19 +92,22 @@ export default function TasksPage() {
   }, []);
 
   return (
-    <main className="min-h-screen transition-all duration-200 ease-out px-3">
-      <h2 className="text-3xl font-bold mb-4 lg:pl-10 flex items-center gap-2 lg:sticky lg:top-2">Управление задачами</h2>
+    <main className="min-h-screen transition-all duration-200 ease-out px-3 overflow-x-hidden">
+      <h2 className="text-3xl font-bold mb-4 lg:pl-10 flex items-center gap-2 lg:sticky lg:top-2">
+        Управление задачами
+      </h2>
 
-      <div className="flex flex-wrap gap-4">
+      {/* Две колонки: форма + список. Перенос вниз, когда не хватает места */}
+      <div className="flex flex-wrap items-start gap-4">
         {/* Форма */}
-        <div className="lg:sticky lg:top-14 flex-1 w-full md:min-w-[500px] min-w-auto max-h-fit bg-white p-4 md:p-6 rounded-2xl shadow space-y-3 md:space-y-4 border border-gray-200 text-sm md:text-base">
+        <div className="lg:sticky lg:top-14 flex-1 min-w-[480px] max-h-fit bg-white p-4 md:p-6 rounded-2xl shadow space-y-3 md:space-y-4 border border-gray-200 text-sm md:text-base">
           <h3 className="font-semibold text-base md:text-lg flex flex-col gap-1">
             {selectedTask ? (
               <>
                 <div className="flex items-center gap-2">
                   <FaEdit size={16} className="md:size-4" /> Редактирование
                 </div>
-                <span className="text-purple-600">{selectedTask.content}</span>
+                <span className="text-purple-600 break-words">{selectedTask.content}</span>
               </>
             ) : (
               <div className="flex items-center gap-2">
@@ -147,6 +150,7 @@ export default function TasksPage() {
                 </PopoverContent>
               </Popover>
             </div>
+
             <input
               type="number"
               className="border p-2 rounded-lg flex-1 text-sm md:text-base"
@@ -204,6 +208,7 @@ export default function TasksPage() {
                 </>
               )}
             </button>
+
             {selectedTask && (
               <button
                 onClick={clearForm}
@@ -216,68 +221,73 @@ export default function TasksPage() {
         </div>
 
         {/* Список задач */}
-        <div className="flex-4 space-y-2 md:space-y-3 md:min-w-[300px] min-w-auto max-w-full pb-3 text-sm md:text-base">
+        <div className="flex-[2] basis-[420px] min-w-[280px] max-w-full min-w-0 space-y-2 md:space-y-3 pb-3 text-sm md:text-base">
           {tasks.map((t) => (
             <div
               key={t.id}
-              className={`p-3 md:p-4 rounded-lg shadow flex flex-col gap-2 border-l-8 transition cursor-pointer ${selectedTask?.id === t.id
-                  ? "bg-purple-50 ring-2 ring-purple-400"
-                  : "bg-white"
+              className={`p-2 md:p-3 rounded-lg shadow flex flex-col gap-2 border-l-8 transition cursor-pointer overflow-hidden ${selectedTask?.id === t.id ? "bg-purple-50 ring-2 ring-purple-400" : "bg-white"
                 }`}
               style={{ borderColor: t.color }}
               onClick={() => selectTask(t)}
             >
-              {/* Верхняя строка */}
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-3">
-                {/* Левая часть */}
-                <div className="flex items-center justify-between gap-2 md:gap-3 flex-shrink-0">
-                  {/* Аватар */}
-                  {t.user.avatarUrl ? (
-                    <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
+              {/* Верхняя часть карточки */}
+              <div className="flex flex-col md:flex-row md:items-start md:gap-3 md:flex-nowrap">
+                {/* Левая группа: аватар + мобильная кнопка удалить */}
+                <div className="flex items-start justify-between gap-2 md:gap-3">
+                  {t.user?.avatarUrl ? (
+                    <Avatar className="h-8 w-8 md:h-10 md:w-10 shrink-0">
                       <AvatarImage src={t.user.avatarUrl} />
                       <AvatarFallback>AU</AvatarFallback>
                     </Avatar>
                   ) : (
-                    <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
+                    <Avatar className="h-8 w-8 md:h-10 md:w-10 shrink-0">
                       <AvatarFallback>?</AvatarFallback>
                     </Avatar>
                   )}
 
-                  {/* Кнопка удалить (рядом с аватаркой на мобилках, справа на md+) */}
+                  {/* Удалить (мобилы) */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteTask(t.id);
                     }}
-                    className="text-red-600 hover:text-red-800 flex items-center gap-1 px-1.5 py-1 text-xs md:px-2 md:py-1 md:text-sm transition md:hidden"
+                    className="self-start text-red-600 hover:text-red-800 flex items-center gap-1 px-1.5 py-1 text-xs md:hidden transition"
                   >
-                    <FaTrash size={12} className="md:size-4" /> Удалить
+                    <FaTrash size={12} /> Удалить
                   </button>
                 </div>
 
+
                 {/* Контент задачи */}
-                <div className="flex-1">
-                  <div className="font-medium">{t.content}</div>
-<div className="text-xs md:text-sm text-gray-500 flex flex-col md:flex-row md:items-center md:gap-2">
-  <div className="flex items-center gap-1">
-    <FaThumbtack size={12} className="md:size-4 text-gray-400" />
-    <span>Позиция: {t.position}</span>
-  </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium break-words mb-2">{t.content}</div>
 
-  <span className="hidden md:inline text-gray-400">|</span>
+                  <div className="text-xs md:text-sm text-gray-500 flex flex-col md:flex-row md:flex-wrap md:items-center gap-1 md:gap-x-2">
+                    {/* Позиция */}
+                    <div className="flex items-center gap-1">
+                      <FaThumbtack size={12} className="text-gray-400" />
+                      <span>Позиция: {t.position}</span>
+                    </div>
 
-  <div className="flex items-center gap-1">
-    <FaColumns size={12} className="md:size-4 text-gray-400" />
-    <span>Колонка: {t.column.title}</span>
-  </div>
+                    {/* Разделитель — только на desktop */}
+                    <span className="hidden md:inline text-gray-400">|</span>
 
-  <span className="hidden md:inline text-gray-400">|</span>
+                    {/* Колонка */}
+                    <div className="flex items-center gap-1">
+                      <FaColumns size={12} className="text-gray-400" />
+                      <span>Колонка: {t.column?.title}</span>
+                    </div>
 
-  <div className="flex items-center gap-1">
-    <FaUser size={12} className="md:size-4 text-gray-400" />
-    <span>Пользователь: {t.user?.nickname || t.user?.userId || "Not found"}</span>
-  </div>
-</div>
+                    <span className="hidden md:inline text-gray-400">|</span>
+
+                    {/* Пользователь */}
+                    <div className="flex items-center gap-1">
+                      <FaUser size={12} className="text-gray-400" />
+                      <span>
+                        Пользователь: {t.user?.nickname || t.user?.userId || "Not found"}
+                      </span>
+                    </div>
+                  </div>
 
                   {t.tags?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
@@ -293,13 +303,13 @@ export default function TasksPage() {
                   )}
                 </div>
 
-                {/* Кнопка удалить — только для md+ */}
+                {/* Удалить (md+) */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     deleteTask(t.id);
                   }}
-                  className="hidden md:flex text-red-600 hover:text-red-800 items-center gap-1 px-2 py-1 text-sm transition"
+                  className="hidden md:inline-flex shrink-0 text-red-600 hover:text-red-800 items-center gap-1 px-2 py-1 text-sm transition ml-auto"
                 >
                   <FaTrash /> Удалить
                 </button>
@@ -307,9 +317,7 @@ export default function TasksPage() {
             </div>
           ))}
 
-          {tasks.length === 0 && (
-            <div className="text-gray-500 italic">Нет задач</div>
-          )}
+          {tasks.length === 0 && <div className="text-gray-500 italic">Нет задач</div>}
         </div>
       </div>
     </main>
