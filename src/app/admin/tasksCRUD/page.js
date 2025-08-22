@@ -99,10 +99,11 @@ export default function TasksPage() {
 
       {/* Две колонки: форма + список. Перенос вниз, когда не хватает места */}
       <div className="flex flex-wrap items-start gap-4">
-        {/* Форма */}
-        <div className="lg:sticky lg:top-14 flex-1 md:min-w-[480px] max-h-fit bg-white p-4 md:p-6 rounded-2xl shadow space-y-3 md:space-y-4 border border-gray-200 text-sm md:text-base">
-          <h3 className="font-semibold text-base md:text-lg flex flex-col gap-1">
-            {selectedTask ? (
+      {/* Форма */}
+      <div className="lg:sticky lg:top-14 flex-1 w-full md:min-w-[480px] lg:min-w-[560px] max-h-fit bg-white p-4 md:p-6 rounded-2xl shadow space-y-3 md:space-y-4 border border-gray-200 text-sm md:text-base">
+        <h3 className="font-semibold text-base md:text-lg flex flex-col gap-1">
+          {selectedTask ? (
+
               <>
                 <div className="flex items-center gap-2">
                   <FaEdit size={16} className="md:size-4" /> Редактирование
