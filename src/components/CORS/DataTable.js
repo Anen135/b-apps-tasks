@@ -100,24 +100,26 @@ export default function DataTable({
                   {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}
-              {onEdit && (
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => onEdit(row)}
-                    className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
-                  >
-                    Редактировать
-                  </button>
+              {(onEdit || onDelete) && (
+                <td className="border px-4 py-2 flex gap-2">
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Редактировать
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={() => onDelete(row)}
+                      className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                    >
+                      Удалить
+                    </button>
+                  )}
                 </td>
               )}
-              {onDelete && <td className="border px-4 py-2">
-                <button
-                  onClick={() => onDelete(row)}
-                  className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
-                >
-                  Удалить
-                </button>
-              </td>}
             </tr>
           ))}
         </tbody>
