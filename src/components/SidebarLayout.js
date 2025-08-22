@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import {
   MdHome,
   MdCheckCircle,
-  MdClipboard,
+  ClipboardList,
   MdEdit,
   MdSettings,
   MdInventory,
@@ -22,7 +22,7 @@ export default function SidebarLayout({ children }) {
   const links = [
     { href: '/', label: 'Главная', icon: <MdHome /> },
     { href: '/tasks/my-tasks', label: 'Мои задачи', icon: <MdCheckCircle /> },
-    { href: '/tasks', label: 'Задачи', tag: 'viewer', icon: <MdClipboard /> },
+    { href: '/tasks', label: 'Задачи', tag: 'viewer', icon: <ClipboardList /> },
     { href: '/editor', label: 'Редактор', tag: 'editor', icon: <MdEdit /> },
     { href: '/admin', label: 'Настройки', tag: 'admin', icon: <MdSettings /> },
     { href: '/test', label: 'Тест', icon: <MdInventory /> },
