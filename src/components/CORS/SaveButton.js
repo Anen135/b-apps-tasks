@@ -42,7 +42,7 @@ export default function SaveButton({
           icon: 18
       }
       : {
-          pad: "px-4 py-2.5",
+          pad: "px-4 py-2",
           text: "text-sm",
           icon: 18,
         };
@@ -92,7 +92,7 @@ export default function SaveButton({
             disabled={isLoading}
             className={[
               "group relative inline-flex select-none items-center justify-center",
-              "rounded-2xl font-medium tracking-[-0.01em]",
+              "font-medium tracking-[-0.01em]",
               sizing.pad,
               sizing.text,
               // фон

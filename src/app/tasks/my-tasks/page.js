@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo} from "react"
 import { motion } from "framer-motion"
 import {
   Card,
@@ -11,9 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
+import ColorPicker from "@/components/ColorPicker"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { SketchPicker } from "react-color"
@@ -24,6 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { SelectorPills } from "@/components/SelectPills"
+
+import SaveButton from "@/components/CORS/SaveButton"
 
 import {
   Loader2,
@@ -47,6 +48,8 @@ export default function MyTasks() {
   const [editingTask, setEditingTask] = useState(null)
   const [formData, setFormData] = useState({})
   const [columns, setColumns] = useState([])
+  const [activeColumn, setActiveColumn] = useState("Все")
+  const selectorPills = ["Все", ...columns.map((c) => c.title)]
 
   const fetchColumns = useCallback(async () => {
     try {
@@ -130,6 +133,23 @@ export default function MyTasks() {
     }
   }
 
+  const filteredTasks = useMemo(() => {
+    if (!tasks) return []
+    if (activeColumn === "Все") return tasks
+
+    return tasks.filter((t) => {
+      // 1) если в задаче есть вложенный объект column с title — сравниваем с ним
+      if (t.column?.title) return t.column.title === activeColumn
+
+      // 2) иначе пробуем найти колонку по title и сравнить по id (на случай, если задача хранит только columnId)
+      const col = columns.find((c) => c.title === activeColumn)
+      if (col) return t.columnId?.toString() === col.id?.toString()
+
+      // 3) иначе — не подходит
+      return false
+    })
+  }, [tasks, activeColumn, columns])
+
   if (status === "loading" || loadingTasks) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-muted-foreground">
@@ -164,8 +184,10 @@ export default function MyTasks() {
         <h2 className="text-2xl font-bold">Мои задачи</h2>
       </header>
 
+      <SelectorPills pills={selectorPills} active={activeColumn} onChange={setActiveColumn} />
+
       <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <motion.li
             key={task.id}
             initial={{ opacity: 0, y: 8 }}
@@ -182,7 +204,7 @@ export default function MyTasks() {
                       <label className="text-sm text-muted-foreground">Колонка</label>
                       <Select
                         value={formData.columnId?.toString() || ""}
-                        onValueChange={(val) => setFormData({ ...formData, columnId: val })}
+                        onValueChange={(val) => setFormData({ ...formData, columnId: val, column: columns.find((c) => c.id.toString() === val) })}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Выберите колонку" />
@@ -197,7 +219,7 @@ export default function MyTasks() {
                       </Select>
                     </div>
                   </>
-                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column.color}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column.title}</span> </CardDescription>}
+                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column?.color ?? "transparent"}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column?.title ?? "Не выбрана"}</span> </CardDescription>}
               </CardHeader>
 
               <CardContent className="space-y-2">
@@ -214,32 +236,11 @@ export default function MyTasks() {
                     />
 
                     {/* Color Picker через Popover */}
-                    <div className="flex items-center gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="flex items-center gap-2"
-                          >
-                            <div
-                              className="h-4 w-4 rounded-full border"
-                              style={{ backgroundColor: formData.color }}
-                            />
-                            <Droplet size={16} />
-                            <span>Выбрать цвет</span>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-2 w-auto">
-                          <SketchPicker
-                            color={formData.color}
-                            onChange={(color) => setFormData({ ...formData, color: color.hex })}
-                            disableAlpha
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
+                    <ColorPicker
+                      value={formData.color}
+                      onChange={(color) => setFormData({ ...formData, color })}
+                      className="h-10 px-4 text-sm"
+                    />
                     {/* Поле "Теги" */}
                     <input
                       className="w-full border rounded px-2 py-1"
@@ -250,9 +251,9 @@ export default function MyTasks() {
 
                     {/* Кнопки */}
                     <div className="flex gap-2">
-                      <Button onClick={saveTask} className="bg-green-600 hover:bg-green-700">
+                      <SaveButton onSave={saveTask} className="bg-green-600 hover:bg-green-700">
                         <Save size={16} className="mr-1" /> Сохранить
-                      </Button>
+                      </SaveButton>
                       <Button
                         onClick={cancelEditing}
                         variant="secondary"
