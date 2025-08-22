@@ -92,12 +92,12 @@ export default function TasksPage() {
   }, []);
 
 return (
-  <main className="min-h-screen transition-all px-5">
-    <h2 className="text-3xl font-bold mb-6 flex items-center gap-2 pl-12 lg:sticky lg:top-4">Управление задачами</h2>
+  <main className="min-h-screen transition-all px-3">
+    <h2 className="text-3xl font-bold mb-4 lg:pl-10 flex items-center gap-2 lg:sticky lg:top-2">Управление задачами</h2>
 
-    <div className="flex flex-wrap gap-6">
+    <div className="flex flex-wrap gap-4">
       {/* Форма */}
-      <div className="lg:sticky lg:top-16 flex-1 w-full min-w-[500px] max-h-fit bg-white p-6 rounded-2xl shadow space-y-4 border border-gray-200">
+      <div className="lg:sticky lg:top-14 flex-1 w-full min-w-[500px] max-h-fit bg-white p-6 rounded-2xl shadow space-y-4 border border-gray-200">
         <h3 className="font-semibold text-lg flex items-center gap-2">
           {selectedTask ? (
             <>
@@ -214,7 +214,7 @@ return (
       </div>
 
       {/* Список задач */}
-      <div className="flex-4 space-y-3 min-w-[300px] max-w-full">
+      <div className="flex-4 space-y-3 min-w-[300px] max-w-full pb-3">
         {tasks.map((t) => (
           <div
             key={t.id}

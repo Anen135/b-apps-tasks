@@ -59,7 +59,7 @@ export default function SidebarLayout({ children }) {
           </button>
         </div>
 
-        <ul className="sticky top-0 list-none p-5 m-0">
+        <ul className="sticky top-12 list-none p-5 m-0">
           {filteredLinks.map(({ href, label, icon = null }) => (
             <li key={href} className="mb-2">
               <Link
@@ -80,7 +80,7 @@ export default function SidebarLayout({ children }) {
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="sticky top-5 left-5 z-100 text-3xl bg-transparent border-none cursor-pointer text-[var(--sidebar-primary)]"
+            className="sticky top-0 left-0 p-3 rounded-br-lg z-100 text-2xl bg-[var(--sidebar-primary)] border-none cursor-pointer text-white"
             aria-label="Открыть меню"
           >
             <FaBars />
