@@ -16,8 +16,8 @@ model Column {
 
   tasks     Task[]   @relation("ColumnTasks")
 
-  createdBy   String?
-  createdByUser User? @relation("UserColumns", fields: [createdBy], references: [id])
+  createdBy     String?
+  createdByUser User?   @relation("UserColumns", fields: [createdBy], references: [id])
 }
 
 model Task {
@@ -29,12 +29,12 @@ model Task {
   createdAt DateTime @default(now())
   tags      String[]
 
-  userId   String?
   column   Column   @relation("ColumnTasks", fields: [columnId], references: [id])
-  user     User?    @relation("UserTasks", fields: [userId], references: [id])
 
-  createdBy   String?
-  createdByUser User? @relation("UserCreatedTasks", fields: [createdBy], references: [id])
+  createdBy     String?
+  createdByUser User?   @relation("UserCreatedTasks", fields: [createdBy], references: [id])
+
+  assignees User[] @relation("TaskAssignees")
 
   @@index([columnId, position])
 }
@@ -51,7 +51,20 @@ model User {
   email     String?  @unique
   metadata  Json     @default("{}")
 
-  tasks        Task[]   @relation("UserTasks")
   createdTasks Task[]   @relation("UserCreatedTasks")
   createdCols  Column[] @relation("UserColumns")
+
+  accounts Account[]
+  assignedTasks Task[] @relation("TaskAssignees")
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  provider  String
+  providerId String
+  userId    String
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerId])
 }
