@@ -197,7 +197,7 @@ export default function MyTasks() {
                       </Select>
                     </div>
                   </>
-                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column.color}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column.title}</span> </CardDescription>}
+                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column.color ?? "transparent"}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column.title}</span> </CardDescription>}
               </CardHeader>
 
               <CardContent className="space-y-2">
