@@ -40,38 +40,41 @@ export default function SidebarLayout({ children }) {
       <div
         className={`
           min-h-screen
+          text-[var(--sidebar-foreground)]
           transition-[width] duration-200 ease-out
-          bg-gradient-to-b from-[var(--sidebar-from)] to-[var(--sidebar-to)] text-[var(--sidebar-foreground)]
           ${isOpen ? 'w-64 flex-shrink-0 sidebar-open' : 'w-0 overflow-hidden'}
           fixed top-0 left-0 z-50 md:relative md:z-10 
         `}
       >
-        <div className="sticky top-0 flex justify-between items-center px-4 py-3 border-b border-[var(--sidebar-border)]" >
-          <h2 className="text-lg m-0">
-            Меню
-          </h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-xl bg-transparent border-none cursor-pointer"
-            aria-label="Закрыть меню"
-          >
-            <FaTimes />
-          </button>
-        </div>
+        <div className='sticky top-0 h-screen
+                        bg-gradient-to-b from-[var(--sidebar-from)] to-[var(--sidebar-to)]'>
+          <div className="flex justify-between items-center px-4 py-3 border-b border-[var(--sidebar-border)]" >
+            <h2 className="text-lg m-0">
+              Меню
+            </h2>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-xl bg-transparent border-none cursor-pointer"
+              aria-label="Закрыть меню"
+            >
+              <FaTimes />
+            </button>
+          </div>
 
-        <ul className="sticky top-12 list-none p-5 m-0">
-          {filteredLinks.map(({ href, label, icon = null }) => (
-            <li key={href} className="mb-2">
-              <Link
-                href={href}
-                className="hover:underline flex items-center gap-2 text-[var(--sidebar-foreground)]"
-              >
-                {icon}
-                {label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+          <ul className="list-none p-5 m-0">
+            {filteredLinks.map(({ href, label, icon = null }) => (
+              <li key={href} className="mb-2">
+                <Link
+                  href={href}
+                  className="hover:underline flex items-center gap-2 text-[var(--sidebar-foreground)]"
+                >
+                  {icon}
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {/* Контент + Кнопка открытия */}
