@@ -11,9 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
+import ColorPicker from "@/components/ColorPicker"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { SketchPicker } from "react-color"
@@ -24,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
+import SaveButton from "@/components/CORS/SaveButton"
 
 import {
   Loader2,
@@ -197,7 +197,7 @@ export default function MyTasks() {
                       </Select>
                     </div>
                   </>
-                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column.color ?? "transparent"}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column.title}</span> </CardDescription>}
+                ) : <CardDescription> Колонка: <span className="font-medium" style={{ textDecoration: `underline ${task.column?.color ?? "transparent"}`, textDecorationThickness: "2px", textUnderlineOffset: "2px" }}>{task.column?.title ?? "Не выбрана"}</span> </CardDescription>}
               </CardHeader>
 
               <CardContent className="space-y-2">
@@ -214,32 +214,11 @@ export default function MyTasks() {
                     />
 
                     {/* Color Picker через Popover */}
-                    <div className="flex items-center gap-2">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="flex items-center gap-2"
-                          >
-                            <div
-                              className="h-4 w-4 rounded-full border"
-                              style={{ backgroundColor: formData.color }}
-                            />
-                            <Droplet size={16} />
-                            <span>Выбрать цвет</span>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-2 w-auto">
-                          <SketchPicker
-                            color={formData.color}
-                            onChange={(color) => setFormData({ ...formData, color: color.hex })}
-                            disableAlpha
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-
+                    <ColorPicker
+                      value={formData.color}
+                      onChange={(color) => setFormData({ ...formData, color })}
+                      className="h-10 px-4 text-sm"
+                    />
                     {/* Поле "Теги" */}
                     <input
                       className="w-full border rounded px-2 py-1"
@@ -250,9 +229,9 @@ export default function MyTasks() {
 
                     {/* Кнопки */}
                     <div className="flex gap-2">
-                      <Button onClick={saveTask} className="bg-green-600 hover:bg-green-700">
+                      <SaveButton onSave={saveTask} className="bg-green-600 hover:bg-green-700">
                         <Save size={16} className="mr-1" /> Сохранить
-                      </Button>
+                      </SaveButton>
                       <Button
                         onClick={cancelEditing}
                         variant="secondary"
