@@ -13,7 +13,11 @@ model Column {
   title     String   @default("New Column")
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
+
   tasks     Task[]   @relation("ColumnTasks")
+
+  createdBy   String?
+  createdByUser User? @relation("UserColumns", fields: [createdBy], references: [id])
 }
 
 model Task {
@@ -24,9 +28,13 @@ model Task {
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
   tags      String[]
-  userId    String?
-  column    Column   @relation("ColumnTasks", fields: [columnId], references: [id])
-  user      User?    @relation("UserTasks", fields: [userId], references: [id])
+
+  userId   String?
+  column   Column   @relation("ColumnTasks", fields: [columnId], references: [id])
+  user     User?    @relation("UserTasks", fields: [userId], references: [id])
+
+  createdBy   String?
+  createdByUser User? @relation("UserCreatedTasks", fields: [createdBy], references: [id])
 
   @@index([columnId, position])
 }
@@ -35,12 +43,15 @@ model User {
   id        String   @id @default(cuid())
   login     String   @unique
   password  String
-  avatarUrl String   @default("avatars/unset_avatar.jpg")
+  avatarUrl String   @default("/unset_avatar.jpg")
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
   tags      String[]
   nickname  String   @default("Anonymous")
   email     String?  @unique
   metadata  Json     @default("{}")
-  tasks     Task[]   @relation("UserTasks")
+
+  tasks        Task[]   @relation("UserTasks")
+  createdTasks Task[]   @relation("UserCreatedTasks")
+  createdCols  Column[] @relation("UserColumns")
 }

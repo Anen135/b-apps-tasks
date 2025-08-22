@@ -1,14 +1,15 @@
 'use client';
 import { useState, useMemo } from 'react';
 
-export default function DataTable({ 
-  data, 
-  columns, 
-  itemsPerPage = 10, 
+export default function DataTable({
+  data,
+  columns,
+  itemsPerPage = 10,
   enableSearch = true,
   enableSort = true,
-  enablePagination = true,  
-  onEdit
+  enablePagination = true,
+  onEdit,
+  onDelete
 }) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState(columns[0]?.key || '');
@@ -31,11 +32,14 @@ export default function DataTable({
       res = [...res].sort((a, b) => {
         const aVal = a[sortKey];
         const bVal = b[sortKey];
-
-        if (aVal instanceof Date || bVal instanceof Date) {
+        const aDate = new Date(aVal);
+        const bDate = new Date(bVal);
+        const aIsDate = !isNaN(aDate.getTime());
+        const bIsDate = !isNaN(bDate.getTime());
+        if (aIsDate && bIsDate) {
           return sortOrder === 'asc'
-            ? new Date(aVal) - new Date(bVal)
-            : new Date(bVal) - new Date(aVal);
+            ? aDate - bDate
+            : bDate - aDate;
         }
 
         return sortOrder === 'asc'
@@ -85,7 +89,7 @@ export default function DataTable({
                 {sortKey === col.key && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
               </th>
             ))}
-            {onEdit && <th className="border px-4 py-2">Действия</th>}
+            {(onEdit || onDelete) && <th className="border px-4 py-2">Действия</th>}
           </tr>
         </thead>
         <tbody>
@@ -96,14 +100,24 @@ export default function DataTable({
                   {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}
-              {onEdit && (
-                <td className="border px-4 py-2">
-                  <button
-                    onClick={() => onEdit(row)}
-                    className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
-                  >
-                    Редактировать
-                  </button>
+              {(onEdit || onDelete) && (
+                <td className="border px-4 py-2 flex gap-2">
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="px-2 py-1 text-sm rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Редактировать
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={() => onDelete(row)}
+                      className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                    >
+                      Удалить
+                    </button>
+                  )}
                 </td>
               )}
             </tr>

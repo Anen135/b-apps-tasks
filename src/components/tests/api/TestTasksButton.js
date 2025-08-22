@@ -64,6 +64,7 @@ export default function TestTasksButton({ loading, runTest, setLoading, setError
 
       results.push(await runTest("DELETE", `/api/tasks/${taskId}`));
       results.push(await runTest("DELETE", `/api/tasks/fake-id-123`));
+      results.push(await runTest("DELETE", `/api/tasks/${duplicateTask.data.id}`));
       results.push(await runTest("DELETE", `/api/columns/${columnId}`));
 
     } catch (err) {

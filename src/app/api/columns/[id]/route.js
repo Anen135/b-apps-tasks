@@ -44,6 +44,7 @@ export async function DELETE(_, { params }) {
   } catch (error) {
     console.error('Error deleting column:', error)
     if (error.code === 'P2025') return Response.json({ success: false, error: 'Column not found' }, { status: 404 })
+    if (error.code === 'P2003') return Response.json({ success: false, error: 'Foreign key constraint failed. Please check related resource IDs.' }, { status: 400 })
     return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }

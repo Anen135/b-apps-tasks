@@ -2,7 +2,7 @@
 
 import NavPanel from "@/components/NavPanel";
 import { FiHome, FiTag, FiUser } from "react-icons/fi";
-
+import ParticlesAnimation from '@/components/login/ParticlesAnimation';
 export default function AdminPage() {
   const links = [
     {
@@ -28,18 +28,13 @@ export default function AdminPage() {
       label: "Таблица пользователя",
       description: "Просмотреть данные пользователя",
       icon: <FiTag size={24} />,
-    },
-    {
-      href: "/admin/custom-form",
-      label: "Настройки администратора",
-      description: "Страница где ты делаешь бум бум",
-      icon: <FiUser size={24} />,
-    },
+    }
   ];
 
   return (
-    <main className="p-20 max-w-4xl mx-auto min-h-screen font-sans text-foreground">
+    <main className="py-20 px-5 sm:px-3 max-w-4xl mx-auto min-h-screen font-sans text-foreground">
       <NavPanel links={links} />
+      
     </main>
   );
 }
