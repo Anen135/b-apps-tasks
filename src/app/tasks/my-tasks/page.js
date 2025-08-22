@@ -182,7 +182,7 @@ export default function MyTasks() {
                       <label className="text-sm text-muted-foreground">Колонка</label>
                       <Select
                         value={formData.columnId?.toString() || ""}
-                        onValueChange={(val) => setFormData({ ...formData, columnId: val })}
+                        onValueChange={(val) => setFormData({ ...formData, columnId: val, column: columns.find((c) => c.id.toString() === val) })}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Выберите колонку" />

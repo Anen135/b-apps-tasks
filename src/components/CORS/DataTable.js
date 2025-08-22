@@ -8,7 +8,8 @@ export default function DataTable({
   enableSearch = true,
   enableSort = true,
   enablePagination = true,
-  onEdit
+  onEdit,
+  onDelete
 }) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState(columns[0]?.key || '');
@@ -88,7 +89,7 @@ export default function DataTable({
                 {sortKey === col.key && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
               </th>
             ))}
-            {onEdit && <th className="border px-4 py-2">Действия</th>}
+            {(onEdit || onDelete) && <th className="border px-4 py-2">Действия</th>}
           </tr>
         </thead>
         <tbody>
@@ -109,6 +110,14 @@ export default function DataTable({
                   </button>
                 </td>
               )}
+              {onDelete && <td className="border px-4 py-2">
+                <button
+                  onClick={() => onDelete(row)}
+                  className="px-2 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600"
+                >
+                  Удалить
+                </button>
+              </td>}
             </tr>
           ))}
         </tbody>

@@ -25,6 +25,8 @@ export default function DemoUsersPage() {
     setEditingRow(row);
   };
 
+
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -63,6 +65,11 @@ export default function DemoUsersPage() {
       body: JSON.stringify(newRow),
     });
     setEditingRow(null);
+    fetchUsers(); // перезагружаем список
+  };
+
+    const handleDelete = async (id) => {
+    await fetch(`/api/users/${id}`, { method: 'DELETE' });
     fetchUsers(); // перезагружаем список
   };
 
