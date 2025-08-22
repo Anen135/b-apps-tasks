@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo} from "react"
 import { motion } from "framer-motion"
 import {
   Card,
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { SelectorPills } from "@/components/SelectPills"
 
 import SaveButton from "@/components/CORS/SaveButton"
 
@@ -47,6 +48,8 @@ export default function MyTasks() {
   const [editingTask, setEditingTask] = useState(null)
   const [formData, setFormData] = useState({})
   const [columns, setColumns] = useState([])
+  const [activeColumn, setActiveColumn] = useState("Все")
+  const selectorPills = ["Все", ...columns.map((c) => c.title)]
 
   const fetchColumns = useCallback(async () => {
     try {
@@ -130,6 +133,23 @@ export default function MyTasks() {
     }
   }
 
+  const filteredTasks = useMemo(() => {
+    if (!tasks) return []
+    if (activeColumn === "Все") return tasks
+
+    return tasks.filter((t) => {
+      // 1) если в задаче есть вложенный объект column с title — сравниваем с ним
+      if (t.column?.title) return t.column.title === activeColumn
+
+      // 2) иначе пробуем найти колонку по title и сравнить по id (на случай, если задача хранит только columnId)
+      const col = columns.find((c) => c.title === activeColumn)
+      if (col) return t.columnId?.toString() === col.id?.toString()
+
+      // 3) иначе — не подходит
+      return false
+    })
+  }, [tasks, activeColumn, columns])
+
   if (status === "loading" || loadingTasks) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-muted-foreground">
@@ -164,8 +184,10 @@ export default function MyTasks() {
         <h2 className="text-2xl font-bold">Мои задачи</h2>
       </header>
 
+      <SelectorPills pills={selectorPills} active={activeColumn} onChange={setActiveColumn} />
+
       <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <motion.li
             key={task.id}
             initial={{ opacity: 0, y: 8 }}
