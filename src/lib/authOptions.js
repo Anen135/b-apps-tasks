@@ -90,6 +90,7 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
+        token.roles = user.tags;
       }
       return token;
     },
