@@ -1,39 +1,80 @@
-import prisma from "@/lib/prisma"
-import { downloadImage } from "@/lib/imageService"
+// src/lib/auth/userService.js
+import prisma from "@/lib/prisma";
 
 /**
- * Найти пользователя по логину (GitHub login)
+ * Найти пользователя по ID
+ */
+export async function findUserById(id) {
+  return await prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      login: true,
+      nickname: true,
+      avatarUrl: true,
+      tags: true,
+      email: true,
+    },
+  });
+}
+
+/**
+ * Найти пользователя по логину
  */
 export async function findUserByLogin(login) {
   return await prisma.user.findUnique({
     where: { login },
-  })
+  });
 }
 
 /**
- * Создать нового пользователя с защитой от гонок через транзакцию
- * Временно картинка не создаётся, пока не будет облачного хранилища
+ * Найти пользователя по email
  */
-export async function createUser({ login, name, image, email }) {
-  const existingUser = await prisma.user.findUnique({ where: { login } });
-  if (existingUser) {
-    return existingUser;
-  }
-  if (image) {
-    const filename = `${login}.jpg`;
-    //avatarUrl = await downloadImage(image, filename);
-  }
-  let avatarUrl = '/unset_avatar.png';
-  return await prisma.$transaction(async (tx) => {
-    return await tx.user.create({
-      data: {
-        login,
-        nickname: name || "Anonymous",
-        avatarUrl,
-        email,
-        password: "",
-        tags: [],
+export async function findUserByEmail(email) {
+  return await prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+/**
+ * Создать нового пользователя
+ */
+export async function createUser({ login, email, name, avatarUrl }) {
+  return await prisma.user.create({
+    data: {
+      login,
+      email,
+      nickname: name || "Anonymous",
+      avatarUrl: avatarUrl || "/unset_avatar.jpg",
+      password: "", // для OAuth пустой
+    },
+  });
+}
+
+/**
+ * Найти Account по провайдеру
+ */
+export async function findAccount(provider, providerId) {
+  return await prisma.account.findUnique({
+    where: {
+      provider_providerId: {
+        provider,
+        providerId,
       },
-    });
+    },
+    include: { user: true },
+  });
+}
+
+/**
+ * Создать Account для пользователя
+ */
+export async function createAccount({ provider, providerId, userId }) {
+  return await prisma.account.create({
+    data: {
+      provider,
+      providerId,
+      userId,
+    },
   });
 }

@@ -1,34 +1,45 @@
-import GitHub from "next-auth/providers/github"
-import Google from "next-auth/providers/google"
-import { findUserByLogin, createUser } from "@/lib/auth/userService"
+// src/lib/authOptions.js
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import {
+  findUserByLogin,
+  findUserByEmail,
+  createUser,
+  findAccount,
+  createAccount,
+  findUserById,
+} from "@/lib/auth/userService";
 
 export const authOptions = {
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      profile(profile) {
-        return {
-          id: profile.id.toString(),
-          name: profile.name || profile.login,
-          login: profile.login,
-          email: profile.email,
-          image: profile.avatar_url,
-        }
-      },
     }),
 
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      profile(profile) {
-        return {
-          id: profile.sub, 
-          name: profile.name,
-          login: profile.email,
-          email: profile.email,
-          image: profile.picture,
-        }
+    }),
+
+    Credentials({
+      name: "Credentials",
+      credentials: {
+        login: { label: "Login", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.login || !credentials?.password) return null;
+
+        const user = await findUserByLogin(credentials.login);
+        if (!user) return null;
+
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
+
+        return user;
       },
     }),
   ],
@@ -40,49 +51,57 @@ export const authOptions = {
   },
 
   callbacks: {
-    async signIn({ user }) {
-      let existingUser = await findUserByLogin(user.login)
-
-      if (!existingUser) {
-        existingUser = await createUser({
-          login: user.login,
-          name: user.name,
-          image: user.image,
-          email: user.email,
-        })
+    async signIn({ user, account, profile }) {
+      if (account.provider === "credentials") {
+        return true; // уже проверено authorize()
       }
-      user.id = existingUser.id
-      user.tags = existingUser.tags || []
 
-      return true
+      const {provider} = account;
+      const providerId = account.providerAccountId;
+
+      // Найти Account
+      let dbAccount = await findAccount(provider, providerId);
+      if (dbAccount) {
+        user.id = dbAccount.userId;
+        return true;
+      }
+
+      // Если нет Account, ищем по email
+      let dbUser = null;
+      if (profile.email) {
+        dbUser = await findUserByEmail(profile.email);
+      }
+
+      if (!dbUser) {
+        dbUser = await createUser({
+          login: profile.login || profile.email || `${provider}_${providerId}`,
+          email: profile.email,
+          name: profile.name,
+          avatarUrl: profile.image,
+        });
+      }
+
+      await createAccount({ provider, providerId, userId: dbUser.id });
+      user.id = dbUser.id;
+
+      return true;
     },
 
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id
-        token.login = user.login
-        token.tags = user.tags || []
-        return token
+        token.sub = user.id;
       }
-
-      if (token.sub) {
-        const dbUser = await findUserByLogin(token.login)
-        if (dbUser) {
-          token.login = dbUser.login
-          token.tags = dbUser.tags || []
-        }
-      }
-
-      return token
+      return token;
     },
 
     async session({ session, token }) {
-      session.user.id = token.sub
-      session.user.login = token.login
-      session.user.tags = token.tags || []
-      return session
+      const dbUser = await findUserById(token.sub);
+      if (dbUser) {
+        session.user = dbUser;
+      }
+      return session;
     },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-}
+};
