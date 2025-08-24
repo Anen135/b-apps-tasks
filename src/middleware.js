@@ -5,8 +5,9 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  // Разрешаем доступ к страницам логина и API авторизации
-  if (["/login", "/api/auth", '/news'].some((path) => pathname.startsWith(path))) {
+
+  // Разрешаем доступ к публичным страницам
+  if (["/login", "/api/auth", "/news"].some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 

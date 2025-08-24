@@ -12,6 +12,7 @@ const CATEGORIES = [
   "Все",
   "Global",
   "Design",
+  "Preview"
 ];
 
 const AUTHORS = {
@@ -46,6 +47,30 @@ const ARTICLES = [
     readTime: 4,
     trending: false,
     tags: ["Design"]
+  },
+  {
+    id: 2,
+    title: "Начата работа над БД",
+    category: "Preview",
+    excerpt: "Сервер может временно не работать по причине того, что ведутся работы на сервере.",
+    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
+    author: AUTHORS.Anen,
+    date: new Date('2025-08-22').toISOString(),
+    readTime: 4,
+    trending: false,
+    tags: ["Preview", "DB"]
+  },
+    {
+    id: 3,
+    title: "2FA Github",
+    category: "Global",
+    excerpt: "Гитхаб уронил нам OAuth потому, что теперь владельцев OAuth требуют пройти 2FA. В планах полностью отказаться от OAuth.",
+    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
+    author: AUTHORS.Anen,
+    date: new Date('2025-08-23').toISOString(),
+    readTime: 4,
+    trending: false,
+    tags: ["Global", "Error", "Github"]
   }
 ]
 
