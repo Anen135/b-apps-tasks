@@ -4,7 +4,22 @@ import prisma from '@/lib/prisma'
 export async function GET(_, context) {
   const { id } = await context.params
   try {
-    const tasks = await prisma.task.findMany({ where: { userId: id } })
+    const tasks = await prisma.task.findMany({
+      where: {
+        assignees: {
+          some: {
+            id: id
+          }
+        }
+      },
+      orderBy: {
+        position: 'asc'
+      },
+      include: {
+        column: true,
+        createdByUser: true
+      }
+    })
     return Response.json(tasks)
   } catch (error) {
     console.error('Error fetching tasks:', error)

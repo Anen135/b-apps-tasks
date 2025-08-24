@@ -70,11 +70,10 @@ export const authOptions = {
         return true; // уже проверено authorize()
       }
 
-      const { provider } = account;
-      const providerId = account.providerAccountId;
+      const {provider, providerAccountId} = account;
 
       // Найти Account
-      let dbAccount = await findAccount(provider, providerId);
+      let dbAccount = await findAccount(provider, providerAccountId);
       if (dbAccount) {
         user.id = dbAccount.userId;
         return true;

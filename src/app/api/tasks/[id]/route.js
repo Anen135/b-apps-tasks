@@ -18,10 +18,12 @@ export async function PUT(req, { params }) {
       data: {
         content: data.content,
         position: data.position,
-        columnId: data.columnId,
         color: data.color,
-        tags: data.tags ?? [],
-        userId: data.userId ?? null
+        tags: data.tags,
+        assignees: data.assignees,
+        column: {
+          connect: { id: data.columnId }
+        }
       }
     })
     return Response.json(updated)
