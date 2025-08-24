@@ -11,7 +11,7 @@ export default function S3ManagerPage() {
   // Fetch files from API
   const fetchFiles = async () => {
     setLoading(true);
-    const res = await fetch("/api/list");
+    const res = await fetch("/api/s3/list");
     const data = await res.json();
     setFiles(data.files || []);
     setLoading(false);
@@ -28,7 +28,7 @@ export default function S3ManagerPage() {
     const formData = new FormData();
     formData.append("file", selectedFile);
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/api/s3/upload", {
       method: "POST",
       body: formData,
     });
@@ -40,7 +40,7 @@ export default function S3ManagerPage() {
 
   // Download file
   const handleDownload = async (key) => {
-    const res = await fetch(`/api/file-url?key=${encodeURIComponent(key)}`);
+    const res = await fetch(`/api/s3/file-url?key=${encodeURIComponent(key)}`);
     const data = await res.json();
     if (data.url) window.open(data.url, "_blank");
   };
@@ -48,7 +48,7 @@ export default function S3ManagerPage() {
   // Delete file
   const handleDelete = async (key) => {
     if (!confirm("Delete this file?")) return;
-    await fetch(`/api/delete?key=${encodeURIComponent(key)}`, { method: "DELETE" });
+    await fetch(`/api/s3/delete?key=${encodeURIComponent(key)}`, { method: "DELETE" });
     fetchFiles();
   };
 

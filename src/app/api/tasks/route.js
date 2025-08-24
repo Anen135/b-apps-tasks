@@ -1,5 +1,6 @@
 // src/app/api/tasks/route.js
 import prisma from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth/getCurrentUser'
 
 export async function GET() {
   const tasks = await prisma.task.findMany({
@@ -7,25 +8,40 @@ export async function GET() {
       column: true,
       createdByUser: true,
       assignees: true
-    }
-  })
+    },
+    orderBy: { position: 'asc' }
+  });
   return Response.json(tasks)
 }
 
 export async function POST(req) {
-  const data = await req.json()
   try {
-    const task = await prisma.task.create({
+    const data = await req.json();
+    const user = await getCurrentUser();
+    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    const { content, position, color, tags, columnId, assignees } = data;
+
+    const newTask = await prisma.task.create({
       data: {
-        content: data.content,
-        position: data.position,
-        columnId: data.columnId,
-        color: data.color,
-        tags: data.tags ?? [],
-        createdBy: data.userId,
+        content,
+        position,
+        color,
+        tags,
+        column: columnId ? { connect: { id: columnId } } : undefined,
+        createdByUser: {
+          connect: { id: "cmeo523hd0000dnpggqva11ba" }
+        },
+        assignees: {
+          connect: (assignees || []).map((uid) => ({ id: uid }))
+        }
+      },
+      include: {
+        column: true,
+        assignees: true
       }
-    })
-    return Response.json(task)
+    });
+
+    return Response.json(newTask);
   } catch (error) {
     console.error("Error creating task:", error)
     if (error.code === 'P2002') {
