@@ -78,3 +78,30 @@ export async function createAccount({ provider, providerId, userId }) {
     },
   });
 }
+
+/**
+ * Создать пользователя + аккаунт в транзакции
+ */
+export async function createUserWithAccount({ provider, providerAccountId, login, email, name, avatarUrl }) {
+  return prisma.$transaction(async (tx) => {
+    let user = await tx.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await tx.user.create({
+        data: {
+          login,
+          email,
+          nickname: name || "Anonymous",
+          avatarUrl: avatarUrl || "/unset_avatar.png",
+          password: "",
+        },
+      });
+    }
+
+    const account = await tx.account.create({
+      data: { provider, providerId: providerAccountId, userId: user.id },
+    });
+
+    return { user, account };
+  });
+}
