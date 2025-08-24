@@ -25,13 +25,10 @@ export async function middleware(req) {
 
   // Проверка прав для /admin (теперь из токена берём roles, если добавили в jwt)
   if (pathname.startsWith("/admin")) {
-    const roles = token.roles || []; // заполняем в jwt callback
+    const roles = token.tags;
     if (!roles.includes("admin")) {
       return pathname.startsWith("/api")
-        ? new NextResponse(JSON.stringify({ error: "Forbidden" }), {
-            status: 403,
-            headers: { "Content-Type": "application/json" },
-          })
+        ? new NextResponse(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { "Content-Type": "application/json" }, })
         : NextResponse.redirect(new URL("/permission-denied", req.url));
     }
   }

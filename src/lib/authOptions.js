@@ -56,7 +56,7 @@ export const authOptions = {
         return true; // уже проверено authorize()
       }
 
-      const {provider} = account;
+      const { provider } = account;
       const providerId = account.providerAccountId;
 
       // Найти Account
@@ -83,25 +83,41 @@ export const authOptions = {
 
       await createAccount({ provider, providerId, userId: dbUser.id });
       user.id = dbUser.id;
+      user.tags = dbUser.tags;
 
       return true;
     },
 
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id;
-        token.roles = user.tags;
-      }
-      return token;
-    },
+async jwt({ token, user }) {
+  if (user) {
+    // Первый вызов (user есть) → тянем юзера из БД по email
+    const dbUser = await findUserByEmail(user.email);
+    if (dbUser) {
+      console.log("JWT for user:", dbUser);
+      token.sub = dbUser.id;
+      token.login = dbUser.login;
+      token.tags = dbUser.tags;
+      token.picture = dbUser.avatarUrl;
+      token.name = dbUser.nickname;
+      token.email = dbUser.email;
+      console.log("JWT token:", token);
+    }
+  }
+  return token;
+},
 
-    async session({ session, token }) {
-      const dbUser = await findUserById(token.sub);
-      if (dbUser) {
-        session.user = dbUser;
-      }
-      return session;
-    },
+async session({ session, token }) {
+  session.user = {
+    id: token.sub,
+    login: token.login,
+    tags: token.tags,
+    avatarUrl: token.avatarUrl,
+    nickname: token.name,
+    email: token.email,
+  };
+  console.log("Session:", session);
+  return session;
+}
   },
 
   secret: process.env.NEXTAUTH_SECRET,

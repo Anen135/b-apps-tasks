@@ -1,9 +1,14 @@
 // src/app/api/tasks/route.js
 import prisma from '@/lib/prisma'
-import { Columns } from 'lucide-react'
 
 export async function GET() {
-  const tasks = await prisma.task.findMany({ include: { column: true, user: true} })
+  const tasks = await prisma.task.findMany({
+    include: {
+      column: true,
+      createdByUser: true,
+      assignees: true
+    }
+  })
   return Response.json(tasks)
 }
 
@@ -17,14 +22,17 @@ export async function POST(req) {
         columnId: data.columnId,
         color: data.color,
         tags: data.tags ?? [],
-        userId: data.userId ?? null,
+        createdBy: data.userId,
       }
     })
     return Response.json(task)
   } catch (error) {
     console.error("Error creating task:", error)
-    if (error.code === 'P2002') return Response.json({ error: "Task with this content already exists" }, { status: 400 })
-    else if (error.code === 'P2003') return Response.json({ error: "Column not found" }, { status: 404 })
+    if (error.code === 'P2002') {
+      return Response.json({ error: "Task with this content already exists" }, { status: 400 })
+    } else if (error.code === 'P2003') {
+      return Response.json({ error: "Column not found" }, { status: 404 })
+    }
     return Response.json({ error: "Internal server error" }, { status: 500 })
   }
 }
