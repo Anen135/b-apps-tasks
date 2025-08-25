@@ -29,7 +29,7 @@ export async function POST(req) {
         tags,
         column: columnId ? { connect: { id: columnId } } : undefined,
         createdByUser: {
-          connect: { id: "cmeo523hd0000dnpggqva11ba" }
+          connect: { id: user.id }
         },
         assignees: {
           connect: (assignees || []).map((uid) => ({ id: uid }))
