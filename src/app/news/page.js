@@ -1,110 +1,83 @@
 'use client';
-import React, { useMemo, useState } from "react";
-import { Card, CardContent, } from "@/components/ui/card";
+import React, { useMemo, useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SelectorPills } from "@/components/SelectPills";
-import { ExternalLink, } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { ArticleControls } from "@/components/trash/NewsTrash";
-import { ArticleCard } from "@/components/news/ArticleCard"
+import { ArticleCard } from "@/components/news/ArticleCard";
 
-// --- mock data --------------------------------------------------------------
-const CATEGORIES = [
-  "Все",
-  "Global",
-  "Design",
-  "Preview"
-];
+const CATEGORIES = ["Все", "GLOBAL", "DESIGN", "PREVIEW"];
 
-const AUTHORS = {
-  "Anen": {
-    name: "Anen",
-    avatar: "https://avatars.githubusercontent.com/u/158497427?v=4",
-    role: "Тимлид",
-  }
-};
-
-const ARTICLES = [
-  {
-    id: 0,
-    title: "Добавлены новости",
-    category: "Global",
-    excerpt: "Теперь у нас есть новости, в которых мы можем обозначать новые функции в приложений.",
-    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
-    author: AUTHORS.Anen,
-    date: new Date('2025-08-19').toISOString(),
-    readTime: 4,
-    trending: false,
-    tags: ["Global"]
-  },
-  {
-    id: 1,
-    title: "Цветовая тема",
-    category: "Design",
-    excerpt: "У нас цветовая тема: Фиолетовый + Чёрный. Корпоративный стиль. Графовая схема. Контрастный цвет - бирюзовый.",
-    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
-    author: AUTHORS.Anen,
-    date: new Date('2025-08-20').toISOString(),
-    readTime: 4,
-    trending: false,
-    tags: ["Design"]
-  },
-  {
-    id: 2,
-    title: "Начата работа над БД",
-    category: "Preview",
-    excerpt: "Сервер может временно не работать по причине того, что ведутся работы на сервере.",
-    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
-    author: AUTHORS.Anen,
-    date: new Date('2025-08-22').toISOString(),
-    readTime: 4,
-    trending: false,
-    tags: ["Preview", "DB"]
-  },
-    {
-    id: 3,
-    title: "2FA Github",
-    category: "Global",
-    excerpt: "Гитхаб уронил нам OAuth потому, что теперь владельцев OAuth требуют пройти 2FA. В планах полностью отказаться от OAuth.",
-    cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=60",
-    author: AUTHORS.Anen,
-    date: new Date('2025-08-23').toISOString(),
-    readTime: 4,
-    trending: false,
-    tags: ["Global", "Error", "Github"]
-  }
-]
-
-// --- main page --------------------------------------------------------------
 export default function NewsPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Все");
   const [tags, setTags] = useState(new Set());
-  const [sort, setSort] = useState("new");
+  const [sort, setSort] = useState("createdAt");
+  const [order] = useState("desc");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const filtered = useMemo(() => {
-    let list = ARTICLES.slice();
+  // Все загруженные статьи (глобальный кэш)
+  const [allArticles, setAllArticles] = useState([]);
 
-    if (category !== "Все") list = list.filter((a) => a.category === category);
+  // ✅ Фильтрация локально по кэшу
+  const filteredArticles = useMemo(() => {
+    let result = [...allArticles];
 
-    if (tags.size) list = list.filter((a) => a.tags.some((t) => tags.has(t)));
-
-    if (query.trim()) {
-      const q = query.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.title.toLowerCase().includes(q) ||
-          a.excerpt.toLowerCase().includes(q) ||
-          a.tags.some((t) => t.toLowerCase().includes(q))
+    if (query) {
+      result = result.filter(a =>
+        a.title.toLowerCase().includes(query.toLowerCase()) ||
+        (a.content && a.content.toLowerCase().includes(query.toLowerCase()))
       );
     }
+    if (category !== "Все") {
+      result = result.filter(a => a.category === category);
+    }
+    if (tags.size) {
+      result = result.filter(a => a.tags?.some(t => tags.has(t)));
+    }
 
-    list.sort((a, b) => {
-      if (sort === "popular") return Number(b.trending) - Number(a.trending);
-      return +new Date(b.date) - +new Date(a.date);
+    // Сортировка
+    result.sort((a, b) => {
+      const valA = a[sort];
+      const valB = b[sort];
+      return order === "desc" ? (valA > valB ? -1 : 1) : (valA > valB ? 1 : -1);
     });
 
-    return list;
-  }, [category, query, sort, tags]);
+    return result;
+  }, [allArticles, query, category, tags, sort, order]);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/news`);
+        if (!res.ok) throw new Error(`Ошибка: ${res.status}`);
+        const _data = await res.json();
+        const data = _data.data.items;
+
+        // Добавляем в кэш, избегая дубликатов
+        setAllArticles(prev => {
+          const ids = new Set(prev.map(a => a.id));
+          const merged = [...prev];
+          data.forEach(item => {
+            if (!ids.has(item.id)) merged.push(item);
+          });
+          return merged;
+        });
+      } catch (err) {
+        console.error(err);
+        setError("Не удалось загрузить новости.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Загружаем при первом рендере
+    fetchNews();
+  }, []);
 
   const toggleTag = (t) => {
     setTags((prev) => {
@@ -117,22 +90,34 @@ export default function NewsPage() {
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-8">
       {/* Controls */}
-      <ArticleControls query={query} setQuery={setQuery} category={category} setCategory={setCategory} tags={tags} toggleTag={toggleTag} />
+      <ArticleControls
+        query={query}
+        setQuery={setQuery}
+        category={category}
+        setCategory={setCategory}
+        tags={tags}
+        toggleTag={toggleTag}
+      />
 
       {/* Content */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <SelectorPills pills={CATEGORIES} active={category} onChange={setCategory} />
           <div className="hidden items-center gap-2 md:flex">
-            <div className="text-sm text-muted-foreground">Найдено: {filtered.length}</div>
+            <div className="text-sm text-muted-foreground">Найдено: {filteredArticles.length}</div>
             <Button variant="outline" className="gap-2 hidden">
-              {/* Пока не добавим ссылку не будет отображаться*/}
               Открыть ленту <ExternalLink className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {error ? (
+          <Card className="border-dashed">
+            <CardContent className="flex h-40 items-center justify-center">
+              <div className="text-center text-red-500">{error}</div>
+            </CardContent>
+          </Card>
+        ) : filteredArticles.length === 0 && !loading ? (
           <Card className="border-dashed">
             <CardContent className="flex h-40 items-center justify-center">
               <div className="text-center text-muted-foreground">
@@ -141,11 +126,16 @@ export default function NewsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((a) => (
-              <ArticleCard key={a.id} a={a} />
-            ))}
-          </div>
+          <>
+            {loading && (
+              <div className="text-center text-muted-foreground mb-2">Загрузка новых данных...</div>
+            )}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredArticles.map((a) => (
+                <ArticleCard key={a.id} a={a} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

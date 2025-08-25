@@ -1,7 +1,7 @@
 "use client";
 
 import NavPanel from "@/components/NavPanel";
-import { FiHome, FiCpu, FiKey, FiAirplay} from "react-icons/fi";
+import { FiHome, FiCpu, FiKey, FiAirplay, FiBox} from "react-icons/fi";
 
 export default function Page() {
     const links = [
@@ -30,10 +30,10 @@ export default function Page() {
             icon: <FiAirplay size={24} />,
         },
         {
-            href: "/test",
-            label: "Основное меню тестирования",
-            description: "Ты находишься здесь, baka",
-            icon: <FiKey size={24} />,
+            href: "/test/s3",
+            label: "S3",
+            description: "Тестирование работы S3, baka",
+            icon: <FiBox size={24} />,
         }
     ];
 

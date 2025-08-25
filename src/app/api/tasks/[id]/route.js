@@ -9,22 +9,32 @@ export async function GET(_, { params }) {
 }
 
 export async function PUT(req, { params }) {
-  const { id } = await params
-  const data = await req.json()
-
   try {
+    const { id } = await params;
+    const data = await req.json();
+
+    const { content, position, color, tags, columnId, assignees } = data;
+
     const updated = await prisma.task.update({
       where: { id },
       data: {
-        content: data.content,
-        position: data.position,
-        columnId: data.columnId,
-        color: data.color,
-        tags: data.tags ?? [],
-        userId: data.userId ?? null
+        content,
+        position,
+        color,
+        tags,
+        column: columnId ? { connect: { id: columnId } } : undefined,
+        assignees: {
+          set: [],
+          connect: (assignees || []).map((uid) => ({ id: uid }))
+        }
+      },
+      include: {
+        column: true,
+        assignees: true
       }
-    })
-    return Response.json(updated)
+    });
+
+    return Response.json(updated);
   } catch (error) {
     if (error.code === 'P2025') return Response.json({ error: 'Task not found' }, { status: 404 })
     console.error('Error updating task:', error)

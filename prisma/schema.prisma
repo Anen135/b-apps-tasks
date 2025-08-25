@@ -4,8 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Column {
@@ -14,10 +15,9 @@ model Column {
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
 
-  tasks     Task[]   @relation("ColumnTasks")
-
-  createdBy   String?
-  createdByUser User? @relation("UserColumns", fields: [createdBy], references: [id])
+  createdBy     String?
+  createdByUser User?   @relation("UserColumns", fields: [createdBy], references: [id])
+  tasks         Task[]  @relation("ColumnTasks")
 }
 
 model Task {
@@ -29,12 +29,10 @@ model Task {
   createdAt DateTime @default(now())
   tags      String[]
 
-  userId   String?
-  column   Column   @relation("ColumnTasks", fields: [columnId], references: [id])
-  user     User?    @relation("UserTasks", fields: [userId], references: [id])
-
-  createdBy   String?
-  createdByUser User? @relation("UserCreatedTasks", fields: [createdBy], references: [id])
+  createdBy     String?
+  createdByUser User?   @relation("UserCreatedTasks", fields: [createdBy], references: [id])
+  column        Column  @relation("ColumnTasks", fields: [columnId], references: [id])
+  assignees     User[]  @relation("TaskAssignees")
 
   @@index([columnId, position])
 }
@@ -43,7 +41,7 @@ model User {
   id        String   @id @default(cuid())
   login     String   @unique
   password  String
-  avatarUrl String   @default("/unset_avatar.jpg")
+  avatarUrl String   @default("/unset_avatar.png")
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
   tags      String[]
@@ -51,7 +49,44 @@ model User {
   email     String?  @unique
   metadata  Json     @default("{}")
 
-  tasks        Task[]   @relation("UserTasks")
-  createdTasks Task[]   @relation("UserCreatedTasks")
-  createdCols  Column[] @relation("UserColumns")
+  accounts      Account[]
+  createdTasks  Task[]    @relation("UserCreatedTasks")
+  createdCols   Column[]  @relation("UserColumns")
+  assignedTasks Task[]    @relation("TaskAssignees")
+  authoredNews  News[]    @relation("NewsAuthor")
+}
+
+model Account {
+  id         String @id @default(cuid())
+  provider   String
+  providerId String
+  userId     String
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerId])
+}
+
+model News {
+  id       String        @id @default(cuid())
+  title    String
+  slug     String?       @unique
+  excerpt  String
+  cover    String?
+  trending Boolean       @default(false)
+  tags     String[]
+  category NewsCategory? @default(GLOBAL)
+
+  authorId String?
+  author   User?   @relation("NewsAuthor", fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([trending])
+}
+
+enum NewsCategory {
+  GLOBAL
+  DESIGN
+  PREVIEW
 }
