@@ -3,40 +3,19 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/lib/prisma"
 import { deleteImage } from '@/lib/imageService'
+import bcrypt from 'bcryptjs'
 
 export async function GET(req) {
   const session = await getServerSession(authOptions)
-
-  if (!session || !session.user?.id) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      login: true,
-      nickname: true,
-      avatarUrl: true,
-      color: true,
-      tags: true,
-      createdAt: true,
-    },
-  })
-
-  if (!user) {
-    return new Response(JSON.stringify({ error: "User not found" }), { status: 404 })
-  }
-
+  if (!session || !session.user?.id) { return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }) }
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }})
+  if (!user) { return new Response(JSON.stringify({ error: "User not found" }), { status: 404 }) }
   return Response.json(user)
 }
 
 export async function PUT(req) {
   const session = await getServerSession(authOptions)
-
-  if (!session || !session.user?.id) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
-  }
+  if (!session || !session.user?.id) { return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }) }
 
   const data = await req.json()
   if (data.password) data.password = await bcrypt.hash(data.password, 10)
@@ -69,18 +48,14 @@ export async function PUT(req) {
 export async function DELETE(req) {
   const session = await getServerSession(authOptions)
 
-  if (!session || !session.user?.id) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
-  }
+  if (!session || !session.user?.id) { return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }) }
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { avatarUrl: true },
   })
 
-  if (!user) {
-    return new Response(JSON.stringify({ error: "User not found" }), { status: 404 })
-  }
+  if (!user) { return new Response(JSON.stringify({ error: "User not found" }), { status: 404 }) }
 
   try {
     if (user.avatarUrl) {
