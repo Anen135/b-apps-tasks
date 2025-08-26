@@ -51,7 +51,7 @@ function UserData({ user }) {
             }}
         >
             <Image
-                src={user.image || '/avatars/unset_avatar.jpg'}
+                src={user.image || '/unset_avatar.png'}
                 alt="Аватар"
                 width={64}
                 height={64}
@@ -61,7 +61,7 @@ function UserData({ user }) {
                 }}
             />
             <div>
-                <p><strong>Имя:</strong> {user.name || 'Не указано'}</p>
+                <p><strong>Имя:</strong> {user.nickname || 'Не указано'}</p>
                 <p><strong>Email:</strong> {user.email || 'Не указано'}</p>
                 <p><strong>ID:</strong> {user.id || 'Не указано'}</p>
                 <p><strong>Login:</strong> {user.login || 'Не указано'}</p>
@@ -151,8 +151,7 @@ export default function JWT() {
                     <p style={{ color: '#999', fontStyle: 'italic' }}>Загрузка токена...</p>
                 ) : tokenData ? (
                     <>
-                        <UserData user={tokenData.user} />
-                        <p><strong>Expires:</strong> {formatDate(tokenData.expires)}</p>
+                        <p><strong>Expires:</strong> {formatDate(tokenData.exp)}</p>
                         <p><strong>Полные данные токена:</strong></p>
                         <pre style={{ backgroundColor: '#f6f8fa', padding: '1rem', borderRadius: '8px', overflowX: 'auto' }}>
                             {JSON.stringify(tokenData, null, 2)}

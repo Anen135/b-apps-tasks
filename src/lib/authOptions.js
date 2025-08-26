@@ -1,34 +1,59 @@
-import GitHub from "next-auth/providers/github"
-import Google from "next-auth/providers/google"
-import { findUserByLogin, createUser } from "@/lib/auth/userService"
+// src/lib/authOptions.js
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import {
+  findUserByLogin,
+  findUserByEmail,
+  createUser,
+  findAccount,
+  createAccount,
+  createUserWithAccount
+} from "@/lib/auth/userService";
+
+/**
+ * Генерация уникального логина
+ */
+async function generateUniqueLogin(baseLogin) {
+  let login = baseLogin;
+  let counter = 1;
+
+  while (await findUserByLogin(login)) {
+    login = `${baseLogin}-${counter++}`;
+  }
+
+  return login;
+}
 
 export const authOptions = {
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      profile(profile) {
-        return {
-          id: profile.id.toString(),
-          name: profile.name || profile.login,
-          login: profile.login,
-          email: profile.email,
-          image: profile.avatar_url,
-        }
-      },
     }),
 
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      profile(profile) {
-        return {
-          id: profile.sub, 
-          name: profile.name,
-          login: profile.email,
-          email: profile.email,
-          image: profile.picture,
-        }
+    }),
+
+    Credentials({
+      name: "Credentials",
+      credentials: {
+        login: { label: "Login", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.login || !credentials?.password) return null;
+
+        const user = await findUserByLogin(credentials.login);
+        if (!user) return null;
+
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
+
+        return user;
       },
     }),
   ],
@@ -40,49 +65,64 @@ export const authOptions = {
   },
 
   callbacks: {
-    async signIn({ user }) {
-      let existingUser = await findUserByLogin(user.login)
-
-      if (!existingUser) {
-        existingUser = await createUser({
-          login: user.login,
-          name: user.name,
-          image: user.image,
-          email: user.email,
-        })
+    async signIn({ user, account, profile }) {
+      if (account.provider === "credentials") {
+        return true; // уже проверено authorize()
       }
-      user.id = existingUser.id
-      user.tags = existingUser.tags || []
 
-      return true
+      const {provider, providerAccountId} = account;
+
+      // Найти Account
+      let dbAccount = await findAccount(provider, providerAccountId);
+      if (dbAccount) {
+        user.id = dbAccount.userId;
+        return true;
+      }
+
+      // Если нет Account → создаем в транзакции
+      const login = await generateUniqueLogin(profile.login || profile.email?.split("@")[0] || `${provider}_${providerAccountId}`);
+      const { user: dbUser } = await createUserWithAccount({
+        provider,
+        providerAccountId,
+        login,
+        email: profile.email,
+        name: profile.name,
+        avatarUrl: profile.image,
+      });
+      user.id = dbUser.id;
+      user.tags = dbUser.tags;
+
+      return true;
     },
 
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id
-        token.login = user.login
-        token.tags = user.tags || []
-        return token
-      }
-
-      if (token.sub) {
-        const dbUser = await findUserByLogin(token.login)
+        // Первый вызов (user есть) → тянем юзера из БД по email
+        const dbUser = await findUserByEmail(user.email);
         if (dbUser) {
-          token.login = dbUser.login
-          token.tags = dbUser.tags || []
+          token.sub = dbUser.id;
+          token.login = dbUser.login;
+          token.tags = dbUser.tags;
+          token.picture = dbUser.avatarUrl;
+          token.name = dbUser.nickname;
+          token.email = dbUser.email;
         }
       }
-
-      return token
+      return token;
     },
 
     async session({ session, token }) {
-      session.user.id = token.sub
-      session.user.login = token.login
-      session.user.tags = token.tags || []
-      return session
-    },
+      session.user = {
+        id: token.sub,
+        login: token.login,
+        tags: token.tags,
+        avatarUrl: token.picture,
+        nickname: token.name,
+        email: token.email,
+      };
+      return session;
+    }
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-}
+};

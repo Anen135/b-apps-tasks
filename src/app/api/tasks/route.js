@@ -1,30 +1,54 @@
 // src/app/api/tasks/route.js
 import prisma from '@/lib/prisma'
-import { Columns } from 'lucide-react'
+import { getCurrentUser } from '@/lib/auth/getCurrentUser'
 
 export async function GET() {
-  const tasks = await prisma.task.findMany({ include: { column: true, user: true} })
+  const tasks = await prisma.task.findMany({
+    include: {
+      column: true,
+      createdByUser: true,
+      assignees: true
+    },
+    orderBy: { position: 'asc' }
+  });
   return Response.json(tasks)
 }
 
 export async function POST(req) {
-  const data = await req.json()
   try {
-    const task = await prisma.task.create({
+    const data = await req.json();
+    const user = await getCurrentUser();
+    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+    const { content, position, color, tags, columnId, assignees } = data;
+
+    const newTask = await prisma.task.create({
       data: {
-        content: data.content,
-        position: data.position,
-        columnId: data.columnId,
-        color: data.color,
-        tags: data.tags ?? [],
-        userId: data.userId ?? null,
+        content,
+        position,
+        color,
+        tags,
+        column: columnId ? { connect: { id: columnId } } : undefined,
+        createdByUser: {
+          connect: { id: user.id }
+        },
+        assignees: {
+          connect: (assignees || []).map((uid) => ({ id: uid }))
+        }
+      },
+      include: {
+        column: true,
+        assignees: true
       }
-    })
-    return Response.json(task)
+    });
+
+    return Response.json(newTask);
   } catch (error) {
     console.error("Error creating task:", error)
-    if (error.code === 'P2002') return Response.json({ error: "Task with this content already exists" }, { status: 400 })
-    else if (error.code === 'P2003') return Response.json({ error: "Column not found" }, { status: 404 })
+    if (error.code === 'P2002') {
+      return Response.json({ error: "Task with this content already exists" }, { status: 400 })
+    } else if (error.code === 'P2003') {
+      return Response.json({ error: "Column not found" }, { status: 404 })
+    }
     return Response.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -178,7 +178,7 @@ function ArticleCard({ a }) {
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
       <Card className="overflow-hidden border-0 shadow-sm transition hover:shadow-md dark:bg-zinc-900">
         <div className="relative">
-          <Image src={a.cover} alt={a.title} className="h-48 w-full object-cover" />
+          <Image src={a.cover } alt={a.title} width={1600} height={900} className="h-48 w-full object-cover" />
           {a.trending && (
             <Badge className="absolute left-3 top-3 flex items-center gap-1 bg-orange-600">
               <Flame className="h-4 w-4" /> Тренд
@@ -360,7 +360,7 @@ export default function NewsPage() {
                   <HoverCard key={a.id}>
                     <HoverCardTrigger asChild>
                       <div className="flex cursor-pointer items-start gap-3 rounded-lg p-2 transition hover:bg-muted">
-                        <Image src={a.cover} alt="cover" className="h-14 w-20 rounded object-cover" />
+                        <Image src={a.cover} alt="cover" width={1600} height={900} className="h-14 w-20 rounded object-cover" />
                         <div>
                           <div className="line-clamp-2 text-sm font-medium">{a.title}</div>
                           <div className="text-xs text-muted-foreground">{a.readTime} мин • {a.category}</div>
