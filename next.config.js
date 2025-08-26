@@ -6,7 +6,8 @@ const nextConfig = {
     domains: [
       'avatars.githubusercontent.com',
       'images.unsplash.com',
-      'lh3.googleusercontent.com', 
+      'lh3.googleusercontent.com',
+      's3bucket-business-tasks-manager.s3.filebase.com',
     ],
   },
   webpack: (config) => {

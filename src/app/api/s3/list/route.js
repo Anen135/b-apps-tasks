@@ -1,3 +1,4 @@
+// src/app/api/s3/list/route.ts
 import { NextResponse } from "next/server";
 import { ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { s3Client } from "@/lib/s3";

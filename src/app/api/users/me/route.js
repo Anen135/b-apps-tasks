@@ -1,3 +1,4 @@
+// src/app/api/users/me/route.js
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/authOptions"
 import prisma from "@/lib/prisma"
@@ -29,6 +30,41 @@ export async function GET(req) {
 
   return Response.json(user)
 }
+
+export async function PUT(req) {
+  const session = await getServerSession(authOptions)
+
+  if (!session || !session.user?.id) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
+  }
+
+  const data = await req.json()
+  if (data.password) data.password = await bcrypt.hash(data.password, 10)
+
+  try {
+    const updated = await prisma.user.update({
+      where: { id: session.user.id },
+      data,
+      select: {
+        id: true,
+        login: true,
+        email: true,
+        nickname: true,
+        avatarUrl: true,
+        color: true,
+        tags: true,
+        createdAt: true,
+      },
+    })
+    return Response.json(updated)
+  } catch (error) {
+    if (error.code === "P2025") {
+      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 })
+    }
+    return new Response(JSON.stringify({ error: error.message }), { status: 400 })
+  }
+}
+
 
 export async function DELETE(req) {
   const session = await getServerSession(authOptions)
