@@ -4,16 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { useSession } from 'next-auth/react';
-import {
-  MdHome,
-  MdCheckCircle,
-  MdEdit,
-  MdSettings,
-  MdInventory,
-  MdQueryStats,
-  MdArticle,
-  MdLogin,
-} from 'react-icons/md';
+import { MdHome, MdCheckCircle, MdEdit, MdSettings, MdInventory, MdQueryStats, MdArticle, MdLogin, MdPerson} from 'react-icons/md';
 import { HiClipboardList } from 'react-icons/hi';
 
 export default function SidebarLayout({ children }) {
@@ -22,6 +13,7 @@ export default function SidebarLayout({ children }) {
   const links = [
     { href: '/', label: 'Главная', icon: <MdHome /> },
     { href: '/tasks/my-tasks', label: 'Мои задачи', icon: <MdCheckCircle /> },
+    { href: '/profile', label: 'Профиль', icon: <MdPerson /> },
     { href: '/tasks', label: 'Задачи', tag: 'viewer', icon: <HiClipboardList /> },
     { href: '/editor', label: 'Редактор', tag: 'editor', icon: <MdEdit /> },
     { href: '/admin', label: 'Настройки', tag: 'admin', icon: <MdSettings /> },
@@ -43,7 +35,7 @@ export default function SidebarLayout({ children }) {
           text-[var(--sidebar-foreground)]
           transition-[width] duration-200 ease-out
           ${isOpen ? 'w-64 flex-shrink-0 sidebar-open' : 'w-0 overflow-hidden'}
-          fixed top-0 left-0 z-50 md:relative md:z-10 
+          fixed top-0 left-0 z-50 md:relative md:z-10
         `}
       >
         <div className='sticky top-0 h-screen
@@ -83,7 +75,7 @@ export default function SidebarLayout({ children }) {
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
-            className="sticky top-0 left-0 p-3 rounded-br-lg z-100 text-2xl bg-[var(--sidebar-primary)] border-none cursor-pointer text-white"
+            className="fixed top-0 left-0 p-3 rounded-br-lg z-100 text-2xl bg-[var(--sidebar-primary)] border-none cursor-pointer text-white"
             aria-label="Открыть меню"
           >
             <FaBars />

@@ -235,7 +235,7 @@ export default function ProfilePage() {
         </div>)
         : user ?
           <Tooltip.Provider>
-            <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white p-6">
+            <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-15">
               <div className="max-w-5xl mx-auto">
 
                 {/* header */}
@@ -502,7 +502,7 @@ export default function ProfilePage() {
 
 
               </div>
-            </div>
+            </main>
           </Tooltip.Provider> :
           <div className="min-h-screen flex items-center justify-center bg-slate-50">
             <div className="text-center text-red-600">{error || "User not found"}</div>

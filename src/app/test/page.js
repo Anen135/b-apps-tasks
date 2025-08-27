@@ -6,12 +6,6 @@ import { FiHome, FiCpu, FiKey, FiAirplay, FiBox} from "react-icons/fi";
 export default function Page() {
     const links = [
         {
-            href: "/",
-            label: "Главная",
-            description: "Переход на главную страницу",
-            icon: <FiHome size={24} />,
-        },
-        {
             href: "/test/api",
             label: "API",
             description: "Автоматический тест API путей",

@@ -91,7 +91,7 @@ export default function TasksPage() {
   }, []);
 
   return (
-    <main className="min-h-screen px-3">
+    <main className="min-h-screen px-3 my-15">
       <h2 className="text-3xl font-bold mb-4">Управление задачами</h2>
 
       <div className="flex flex-wrap items-start gap-4">
@@ -203,7 +203,7 @@ export default function TasksPage() {
         </div>
 
         {/* Список задач */}
-        <div className="flex-[2] min-w-[280px] space-y-3">
+        <div className="flex-[2] min-w-[280px]  max-w-[750px] space-y-3">
           {tasks.map((t) => (
             <div
               key={t.id}
