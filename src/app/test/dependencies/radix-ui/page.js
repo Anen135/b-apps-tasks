@@ -29,6 +29,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CheckIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import { motion, AnimatePresence } from 'framer-motion';
+import ImageDropzone from "@/components/ImageDropzone";
+
 
 export default function RadixDemo() {
   const [sliderValue, setSliderValue] = React.useState([50]);
@@ -37,6 +39,8 @@ export default function RadixDemo() {
   const [showLineNumbers, setShowLineNumbers] = React.useState(true)
   const [wrapText, setWrapText] = React.useState(false)
   const [position, setPosition] = React.useState("bottom")
+
+  const [file, setFile] = React.useState(null);
 
   return (
     <main className="max-w-3xl mx-auto p-6 font-sans text-gray-900 bg-background">
@@ -107,79 +111,79 @@ export default function RadixDemo() {
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-4">DropdownMenu</h2>
         <div className="p-10 space-y-4">
-      <h1 className="text-2xl font-bold">Dropdown Menu — все возможности</h1>
+          <h1 className="text-2xl font-bold">Dropdown Menu — все возможности</h1>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline">Открыть меню</Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          {/* Label */}
-          <DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
-          {/* Group */}
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              Профиль
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              Настройки
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Открыть меню</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              {/* Label */}
+              <DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
+              {/* Group */}
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  Профиль
+                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Настройки
+                  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
 
-          <DropdownMenuSeparator />
-
-          {/* Checkbox items */}
-          <DropdownMenuCheckboxItem
-            checked={showLineNumbers}
-            onCheckedChange={setShowLineNumbers}
-          >
-            Показать номера строк
-          </DropdownMenuCheckboxItem>
-          <DropdownMenuCheckboxItem
-            checked={wrapText}
-            onCheckedChange={setWrapText}
-          >
-            Переносить текст
-          </DropdownMenuCheckboxItem>
-
-          <DropdownMenuSeparator />
-
-          {/* Radio group */}
-          <DropdownMenuLabel>Позиция тулбара</DropdownMenuLabel>
-          <DropdownMenuRadioGroup
-            value={position}
-            onValueChange={setPosition}
-          >
-            <DropdownMenuRadioItem value="top">Сверху</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="bottom">Снизу</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="right">Справа</DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-
-          <DropdownMenuSeparator />
-
-          {/* Submenu */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Больше опций</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem>Импорт</DropdownMenuItem>
-              <DropdownMenuItem>Экспорт</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Настройки экспорта</DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
 
-          <DropdownMenuSeparator />
+              {/* Checkbox items */}
+              <DropdownMenuCheckboxItem
+                checked={showLineNumbers}
+                onCheckedChange={setShowLineNumbers}
+              >
+                Показать номера строк
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={wrapText}
+                onCheckedChange={setWrapText}
+              >
+                Переносить текст
+              </DropdownMenuCheckboxItem>
 
-          {/* Destructive */}
-          <DropdownMenuItem variant="destructive">
-            Удалить проект
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+              <DropdownMenuSeparator />
+
+              {/* Radio group */}
+              <DropdownMenuLabel>Позиция тулбара</DropdownMenuLabel>
+              <DropdownMenuRadioGroup
+                value={position}
+                onValueChange={setPosition}
+              >
+                <DropdownMenuRadioItem value="top">Сверху</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="bottom">Снизу</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="right">Справа</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+
+              <DropdownMenuSeparator />
+
+              {/* Submenu */}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Больше опций</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>Импорт</DropdownMenuItem>
+                  <DropdownMenuItem>Экспорт</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Настройки экспорта</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+
+              <DropdownMenuSeparator />
+
+              {/* Destructive */}
+              <DropdownMenuItem variant="destructive">
+                Удалить проект
+                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </section>
 
       {/* Tooltip */}
@@ -269,9 +273,8 @@ export default function RadixDemo() {
         <Toggle.Root
           pressed={toggleOn}
           onPressedChange={setToggleOn}
-          className={`w-14 h-8 rounded-full cursor-pointer relative transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-300 ${
-            toggleOn ? "bg-indigo-600" : "bg-gray-300"
-          }`}
+          className={`w-14 h-8 rounded-full cursor-pointer relative transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-300 ${toggleOn ? "bg-indigo-600" : "bg-gray-300"
+            }`}
         >
           <motion.div
             layout
@@ -369,6 +372,14 @@ export default function RadixDemo() {
             </Select.Content>
           </Select.Portal>
         </Select.Root>
+      </section>
+      <section className="mb-12">
+        <ImageDropzone onChange={setFile} />
+        {file && (
+          <div className="text-sm text-neutral-600">
+            Вы выбрали: <strong>{file.name}</strong> ({Math.round(file.size / 1024)} КБ)
+          </div>
+        )}
       </section>
     </main>
   );

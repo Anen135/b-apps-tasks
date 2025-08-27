@@ -9,6 +9,7 @@ import { Trash2, Save, X, Check, UploadCloud, Copy } from "lucide-react"
 import { Spinner } from "@/components/Loading"
 import Image from "next/image"
 import ColorPicker from "@/components/ColorPicker"
+import ImageDropzone from "@/components/ImageDropzone"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -229,7 +230,7 @@ export default function ProfilePage() {
 
   return (
     <>
-      { loading ?
+      {loading ?
         (<div className="min-h-screen flex items-center justify-center bg-slate-50">
           <div className="text-center text-slate-500"> <Spinner /> Загрузка профиля…</div>
         </div>)
@@ -319,7 +320,7 @@ export default function ProfilePage() {
                   <div className="md:col-span-1 flex flex-col items-center gap-4">
                     <div className="w-full bg-gradient-to-br from-white to-slate-50 rounded-xl p-4 shadow-sm">
                       <div className="flex flex-col items-center gap-3">
-                        <div style={{ borderColor: form.color }} className="rounded-full p-1 ring-2 ring-offset-2" >
+                        <div style={{ borderColor: form.color, boxShadow: `0 0 0 4px ${form.color}` }} className="rounded-full p-1">
                           <Image src={form.avatarUrl || user.avatarUrl || '/unset_avatar.png'} width={128} height={128} alt="avatar" className="w-32 h-32 rounded-full object-cover shadow" />
                         </div>
 
@@ -384,10 +385,8 @@ export default function ProfilePage() {
                           <div className="text-xs text-slate-400 mt-2">Текущий URL: <span className="font-mono break-all">{form.avatarUrl || user.avatarUrl}</span></div>
 
                           <div onDrop={handleDrop} onDragOver={e => { e.preventDefault(); setDragActive(true) }} onDragLeave={() => setDragActive(false)} className={`mt-3 border-dashed rounded-lg p-3 ${dragActive ? 'border-sky-300 bg-sky-50' : 'border-transparent'}`}>
-                            <div className="flex items-center gap-3">
-                              <input ref={fileRef} type="file" accept="image/*" onChange={e => uploadAvatarFile(e.target.files?.[0])} className="hidden" id="avatar-file" />
-                              <label htmlFor="avatar-file" className="inline-flex items-center gap-2 cursor-pointer px-3 py-2 rounded-md border bg-white">Загрузить файл</label>
-                              <div className="text-sm text-slate-400">или перетащите изображение сюда</div>
+                            <div className="flex items-center gap-3 pointer-none">
+                              <ImageDropzone accept="image/*" maxSizeMB={5} onChange={uploadAvatarFile} disabled={true} />
                             </div>
                           </div>
 
