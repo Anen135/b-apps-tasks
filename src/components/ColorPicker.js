@@ -12,8 +12,9 @@ const ColorPicker = ({
   showIcon = true,
   showLabel = true,
   showColorPreview = true,
+  showHex = true,
   label = "Выбрать цвет",
-  icon,
+  icon = <Droplet size={16} />,
   buttonVariant = "outline",
   className,
 }) => {
@@ -34,8 +35,16 @@ const ColorPicker = ({
                 style={{ backgroundColor: value }}
               />
             )}
-            {showIcon && (icon || <Droplet size={16} />)}
+            {showIcon && (icon)}
             {showLabel && <span>{label}</span>}
+            {showHex && (
+              <>
+                <span className="text-sm font-mono px-2 py-1 border-b-2" style={{ color: value, borderColor: value }} >
+                  {value}
+                </span>
+
+              </>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-2 w-auto">
@@ -47,6 +56,7 @@ const ColorPicker = ({
         </PopoverContent>
       </Popover>
     </div>
+
   );
 };
 

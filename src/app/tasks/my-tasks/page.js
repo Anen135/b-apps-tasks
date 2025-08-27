@@ -178,7 +178,7 @@ export default function MyTasks() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl p-4 md:p-8 space-y-8 min-h-screen">
+    <main className="mx-auto max-w-5xl px-4 py-12 md:px-8 space-y-4 min-h-screen">
       <header className="flex items-center gap-3 border-b pb-4">
         <ClipboardList className="h-6 w-6 text-blue-600" />
         <h2 className="text-2xl font-bold">Мои задачи</h2>

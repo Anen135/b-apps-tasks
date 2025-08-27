@@ -1,3 +1,4 @@
+// src/app/api/s3/upload/route.js
 import { NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "@/lib/s3";

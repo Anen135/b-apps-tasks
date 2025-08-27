@@ -6,6 +6,7 @@ import { SelectorPills } from "@/components/SelectPills";
 import { ExternalLink } from "lucide-react";
 import { ArticleControls } from "@/components/trash/NewsTrash";
 import { ArticleCard } from "@/components/news/ArticleCard";
+import { useNews } from "@/hooks/useNews";
 
 const CATEGORIES = ["Все", "GLOBAL", "DESIGN", "PREVIEW"];
 

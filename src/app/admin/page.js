@@ -6,12 +6,6 @@ import ParticlesAnimation from '@/components/login/ParticlesAnimation';
 export default function AdminPage() {
   const links = [
     {
-      href: "/",
-      label: "Главная",
-      description: "Переход на главную страницу",
-      icon: <FiHome size={24} />,
-    },
-    {
       href: "/admin/getTag",
       label: "Выдать тег",
       description: "Выдать тег кому-то",
