@@ -39,14 +39,11 @@ const ColorPicker = ({
             {showLabel && <span>{label}</span>}
             {showHex && (
               <>
-              <span
-  className="text-sm font-mono px-2 py-1 border-b-2 text-"
-  style={{ color: value, borderColor: value }}
->
-  {value}
-</span>
+                <span className="text-sm font-mono px-2 py-1 border-b-2" style={{ color: value, borderColor: value }} >
+                  {value}
+                </span>
 
- </>
+              </>
             )}
           </Button>
         </PopoverTrigger>
@@ -59,7 +56,7 @@ const ColorPicker = ({
         </PopoverContent>
       </Popover>
     </div>
-   
+
   );
 };
 
