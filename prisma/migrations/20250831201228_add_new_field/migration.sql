@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Task" ADD COLUMN     "deadline" TIMESTAMP(3),
+ADD COLUMN     "title" TEXT NOT NULL DEFAULT 'New Task',
+ALTER COLUMN "content" DROP NOT NULL,
+ALTER COLUMN "content" DROP DEFAULT;

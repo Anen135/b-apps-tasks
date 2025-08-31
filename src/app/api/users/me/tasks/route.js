@@ -14,7 +14,7 @@ export async function GET() {
       orderBy: {
         position: "asc"
       },
-      include: { column: true, assignees: true },
+      include: { column: true, assignees: true, createdByUser: true },
     });
 
     return Response.json(tasks);
@@ -53,7 +53,7 @@ export async function PUT(req) {
         color: data.color,
         tags: data.tags ?? [],
       },
-      include: { column: true, assignees: true },
+      include: { column: true, assignees: true, createdByUser: true },
     });
 
     return Response.json(updated);

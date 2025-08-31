@@ -1,43 +1,22 @@
+// src/app/tasks/my-tasks/page.js
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useEffect, useState, useCallback, useMemo} from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import { motion } from "framer-motion"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import ColorPicker from "@/components/ColorPicker"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { SketchPicker } from "react-color"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
 import { SelectorPills } from "@/components/SelectPills"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 import SaveButton from "@/components/CORS/SaveButton"
 
-import {
-  Loader2,
-  ClipboardList,
-  AlertTriangle,
-  Edit2,
-  Save,
-  X,
-  Tags,
-  PaintBucket,
-  ListOrdered,
-  Droplet
-} from "lucide-react"
+import { Loader2, ClipboardList, AlertTriangle, Edit2, Save, X, Tags, PaintBucket, ListOrdered, Droplet } from "lucide-react"
 
 export default function MyTasks() {
   const { data: session, status } = useSession({ required: true })
@@ -196,7 +175,14 @@ export default function MyTasks() {
           >
             <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition dark:bg-zinc-900" style={{ borderLeft: `6px solid ${task.color || "transparent"}` }}>
               <CardHeader>
-                <CardTitle className="text-lg font-semibold">{task.content}</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  <Avatar key={task.createdByUser?.id} className="h-8 w-8">
+                    <AvatarImage src={task.createdByUser?.avatarUrl || ""} />
+                    <AvatarFallback>{task.createdByUser?.nickname}</AvatarFallback>
+                  </Avatar>
+                  <label className="text-sm text-muted-foreground flex">Задача от: <p className="font-medium">{task.createdByUser?.nickname}</p></label>
+                  {task.content}
+                </CardTitle>
                 {editingTask === task.id ? (
                   <>
                     {/* Поле "Колонка" */}

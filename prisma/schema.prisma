@@ -22,11 +22,13 @@ model Column {
 
 model Task {
   id        String   @id @default(cuid())
-  content   String   @default("New Task")
+  title     String   @default("New Task")
+  content   String?
   position  Int
   columnId  String
   color     String   @default("#CCCCCC")
   createdAt DateTime @default(now())
+  deadline  DateTime?
   tags      String[]
 
   createdBy     String?
